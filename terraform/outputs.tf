@@ -17,6 +17,7 @@ output "rds_endpoint" {
 output "rds_database_name" {
   description = "RDS database name"
   value       = aws_db_instance.postgres.db_name
+  sensitive   = true
 }
 
 output "ecr_elessar_url" {
