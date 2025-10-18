@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.0.3"
 
 # Database adapters
-gem "sqlite3", ">= 2.1", groups: [:development, :test]  # SQLite for dev/test
+gem "sqlite3", ">= 2.1", groups: [ :development, :test ]  # SQLite for dev/test
 gem "pg", "~> 1.5"  # PostgreSQL for production
 
 # Use the Puma web server [https://github.com/puma/puma]
