@@ -39,15 +39,15 @@ resource "aws_ecs_task_definition" "elessar" {
       secrets = [
         {
           name      = "DATABASE_URL"
-          valueFrom = aws_secretsmanager_secret.database_url.arn
+          valueFrom = aws_secretsmanager_secret_version.database_url.arn
         },
         {
           name      = "RAILS_MASTER_KEY"
-          valueFrom = aws_secretsmanager_secret.rails_master_key.arn
+          valueFrom = aws_secretsmanager_secret_version.rails_master_key.arn
         },
         {
           name      = "SECRET_KEY_BASE"
-          valueFrom = aws_secretsmanager_secret.secret_key_base.arn
+          valueFrom = aws_secretsmanager_secret_version.secret_key_base.arn
         }
       ]
 
@@ -111,15 +111,15 @@ resource "aws_ecs_task_definition" "elessar_migrate" {
       secrets = [
         {
           name      = "DATABASE_URL"
-          valueFrom = aws_secretsmanager_secret.database_url.arn
+          valueFrom = aws_secretsmanager_secret_version.database_url.arn
         },
         {
           name      = "RAILS_MASTER_KEY"
-          valueFrom = aws_secretsmanager_secret.rails_master_key.arn
+          valueFrom = aws_secretsmanager_secret_version.rails_master_key.arn
         },
         {
           name      = "SECRET_KEY_BASE"
-          valueFrom = aws_secretsmanager_secret.secret_key_base.arn
+          valueFrom = aws_secretsmanager_secret_version.secret_key_base.arn
         }
       ]
 
