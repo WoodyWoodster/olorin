@@ -8,14 +8,13 @@ terraform {
     }
   }
 
-  # Uncomment and configure for remote state
-  # backend "s3" {
-  #   bucket         = "olorin-terraform-state"
-  #   key            = "production/terraform.tfstate"
-  #   region         = "us-east-1"
-  #   encrypt        = true
-  #   dynamodb_table = "olorin-terraform-locks"
-  # }
+  backend "s3" {
+    bucket         = "olorin-terraform-state"
+    key            = "production/terraform.tfstate"
+    region         = "us-west-2"
+    encrypt        = true
+    dynamodb_table = "olorin-terraform-locks"
+  }
 }
 
 provider "aws" {
