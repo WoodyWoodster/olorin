@@ -1,0 +1,33 @@
+# AWS Configuration
+aws_region = "us-east-1"
+environment = "production"
+project_name = "olorin"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b"]
+
+# RDS Configuration
+db_instance_class = "db.t3.micro"
+db_name = "olorin_production"
+db_username = "olorin"
+db_password = "CHANGE_ME_SECURE_PASSWORD"  # Change this!
+db_allocated_storage = 20
+db_backup_retention_period = 7
+
+# ECS Configuration - Elessar
+elessar_cpu = 512
+elessar_memory = 1024
+elessar_desired_count = 2
+
+# ECS Configuration - Celebrimbor
+celebrimbor_cpu = 256
+celebrimbor_memory = 512
+celebrimbor_desired_count = 2
+
+# Application Secrets (get from your Rails app)
+rails_master_key = "CHANGE_ME"  # Get from elessar/config/master.key
+secret_key_base = "CHANGE_ME"   # Generate with: rails secret
+
+# Optional: Domain name for SSL/TLS
+# domain_name = "example.com"
