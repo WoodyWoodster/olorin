@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # Elessar - Rails API backend dependencies
+  - package-ecosystem: bundler
+    directory: "/elessar"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  # Celebrimbor - Vue frontend dependencies
+  - package-ecosystem: npm
+    directory: "/celebrimbor"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
