@@ -1,0 +1,108 @@
+# Rails
+*.rbc
+capybara-*.html
+.rspec
+/db/*.sqlite3
+/db/*.sqlite3-*
+/public/system
+/coverage/
+/spec/tmp
+*.orig
+rerun.txt
+pickle-email-*.html
+
+# Rails 8 - Solid Queue, Solid Cache, Solid Cable
+/db/queue.sqlite3
+/db/queue.sqlite3-*
+/db/cache.sqlite3
+/db/cache.sqlite3-*
+/db/cable.sqlite3
+/db/cable.sqlite3-*
+
+# Logs
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Storage (Active Storage)
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
+# Credentials & Secrets
+/config/master.key
+/config/credentials/*.key
+.env
+.env.*
+!.env.example
+
+# Ignore uploaded files in development
+/public/uploads
+
+# Runtime data
+*.pid
+*.seed
+
+# Ruby/Bundler
+/.bundle
+/vendor/bundle
+
+# Testing
+/coverage
+/spec/reports
+/spec/examples.txt
+/test/reports
+
+# Documentation
+/doc/api
+/doc/app
+/.yardoc
+/.yard
+
+# Docker
+.dockerignore.local
+docker-compose.override.yml
+
+# Kamal (Rails 8 deployment)
+/config/deploy.yml.local
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.settings/
+.byebug_history
+.pryrc.local
+
+# RubyMine
+/.rakeTasks
+
+# Vim
+*.swn
+
+# Emacs
+\#*\#
+.\#*
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Version Managers
+/.ruby-gemset
+.ruby-version.local
+
+# Misc
+/node_modules
+/yarn-error.log
