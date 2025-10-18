@@ -9,11 +9,11 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "olorin-terraform-state"
-    key            = "production/terraform.tfstate"
-    region         = "us-west-2"
-    encrypt        = true
-    dynamodb_table = "olorin-terraform-locks"
+    bucket       = "olorin-terraform-state"
+    key          = "production/terraform.tfstate"
+    region       = "us-west-2"
+    encrypt      = true
+    use_lockfile = true
   }
 }
 
