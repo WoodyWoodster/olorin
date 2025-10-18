@@ -1,0 +1,57 @@
+# Development Docker Compose for Olorin ERP
+services:
+  # Elessar - Rails API backend
+  elessar:
+    build:
+      context: ./elessar
+      dockerfile: Dockerfile.dev
+    container_name: olorin-elessar-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./elessar:/rails
+      - bundle_cache:/usr/local/bundle
+      - ./elessar/db:/rails/db
+      - ./elessar/storage:/rails/storage
+    environment:
+      - RAILS_ENV=development
+      - BUNDLE_PATH=/usr/local/bundle
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/up || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - olorin
+
+  # Celebrimbor - Vue frontend
+  celebrimbor:
+    build:
+      context: ./celebrimbor
+      dockerfile: Dockerfile.dev
+    container_name: olorin-celebrimbor-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./celebrimbor:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3000
+      - NODE_ENV=development
+    depends_on:
+      elessar:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    networks:
+      - olorin
+
+volumes:
+  bundle_cache:
+
+networks:
+  olorin:
+    driver: bridge
