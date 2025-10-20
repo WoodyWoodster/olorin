@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "celebrimbor" {
       healthCheck = {
         command = [
           "CMD-SHELL",
-          "wget --no-verbose --tries=1 --spider http://localhost || exit 1"
+          "test -f /var/run/nginx.pid && kill -0 $(cat /var/run/nginx.pid)"
         ]
         interval    = 30
         timeout     = 5
