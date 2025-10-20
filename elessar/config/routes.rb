@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   namespace :api do
     # Authentication endpoints under /api/auth
     scope :auth do
-      devise_for :users, controllers: {
+      devise_for :users, path: "", controllers: {
         sessions: "users/sessions",
         registrations: "users/registrations"
       }, path_names: {
