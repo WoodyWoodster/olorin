@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import type { LoginRequest, LoginResponse, UserProfileResponse } from '../types/api'
+import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, UserProfileResponse } from '../types/api'
 import apiClient from '../api/client'
 import { useAuthStore } from '../stores/auth'
 
@@ -28,6 +28,35 @@ export function useLogin() {
     },
     onError: (error: unknown) => {
       console.error('Login error:', error)
+    }
+  })
+}
+
+export function useRegister() {
+  const authStore = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (credentials: { email: string; password: string; password_confirmation: string }) => {
+      const response = await apiClient.post<RegisterResponse>('/users', {
+        user: credentials
+      } as RegisterRequest)
+
+      const token = response.headers['authorization']?.split(' ')[1]
+      if (!token) {
+        throw new Error('No token received from server')
+      }
+
+      return { token, user: response.data.user }
+    },
+    onSuccess: (data) => {
+      authStore.setToken(data.token)
+      authStore.user = data.user
+      // Invalidate and refetch user profile
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    },
+    onError: (error: unknown) => {
+      console.error('Registration error:', error)
     }
   })
 }

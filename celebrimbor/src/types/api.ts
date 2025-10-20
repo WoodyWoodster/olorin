@@ -21,6 +21,19 @@ export interface LoginResponse {
   user: User
 }
 
+export interface RegisterRequest {
+  user: {
+    email: string
+    password: string
+    password_confirmation: string
+  }
+}
+
+export interface RegisterResponse {
+  message: string
+  user: User
+}
+
 export interface UserProfileResponse {
   user: User
 }

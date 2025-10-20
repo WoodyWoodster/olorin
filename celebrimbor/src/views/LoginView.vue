@@ -105,7 +105,7 @@
         <CardFooter class="flex flex-col space-y-4 border-t border-slate-100 pt-6">
           <div class="text-sm text-center text-slate-600">
             Don't have an account?
-            <a href="#" class="text-indigo-600 hover:text-indigo-700 font-semibold">Sign up</a>
+            <router-link to="/signup" class="text-indigo-600 hover:text-indigo-700 font-semibold">Sign up</router-link>
           </div>
         </CardFooter>
       </Card>
