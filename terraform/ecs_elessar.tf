@@ -81,7 +81,7 @@ resource "aws_ecs_task_definition" "elessar" {
 # ECS Task Definition for Elessar Migrations (one-off task)
 resource "aws_ecs_task_definition" "elessar_migrate" {
   family                   = "${var.project_name}-elessar-migrate"
-  requires_compatibilities = ["EC2"]
+  requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = var.elessar_cpu
   memory                   = var.elessar_memory

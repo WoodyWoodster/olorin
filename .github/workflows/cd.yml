@@ -120,7 +120,7 @@ jobs:
           TASK_ARN=$(aws ecs run-task \
             --cluster olorin-cluster \
             --task-definition olorin-elessar-migrate \
-            --launch-type EC2 \
+            --launch-type FARGATE \
             --network-configuration "awsvpcConfiguration={subnets=[${{ steps.vpc-config.outputs.subnets }}],securityGroups=[${{ steps.vpc-config.outputs.security_group }}],assignPublicIp=DISABLED}" \
             --region ${{ env.AWS_REGION }} \
             --query 'tasks[0].taskArn' \
