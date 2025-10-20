@@ -9,7 +9,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      const response = await apiClient.post<LoginResponse>('/users/sign_in', {
+      const response = await apiClient.post<LoginResponse>('/api/auth/login', {
         user: credentials
       } as LoginRequest)
 
@@ -38,7 +38,7 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: async (credentials: { email: string; password: string; password_confirmation: string }) => {
-      const response = await apiClient.post<RegisterResponse>('/users', {
+      const response = await apiClient.post<RegisterResponse>('/api/auth/signup', {
         user: credentials
       } as RegisterRequest)
 
@@ -67,7 +67,7 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      await apiClient.delete('/users/sign_out')
+      await apiClient.delete('/api/auth/logout')
     },
     onSuccess: () => {
       authStore.clearAuth()

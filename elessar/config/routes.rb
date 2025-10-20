@@ -1,12 +1,18 @@
 Rails.application.routes.draw do
-  # Devise routes for authentication
-  devise_for :users, controllers: {
-    sessions: "users/sessions",
-    registrations: "users/registrations"
-  }
-
   # API routes
   namespace :api do
+    # Authentication endpoints under /api/auth
+    scope :auth do
+      devise_for :users, controllers: {
+        sessions: "users/sessions",
+        registrations: "users/registrations"
+      }, path_names: {
+        sign_in: "login",
+        sign_out: "logout",
+        registration: "signup"
+      }, skip: [ :passwords, :confirmations, :unlocks ]
+    end
+
     namespace :v1 do
       get "me", to: "me#show"
     end
