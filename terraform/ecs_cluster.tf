@@ -57,16 +57,3 @@ resource "aws_ecs_capacity_provider" "main" {
     Name = "${var.project_name}-capacity-provider"
   }
 }
-
-# Associate Capacity Provider with Cluster
-resource "aws_ecs_cluster_capacity_providers" "main" {
-  cluster_name = aws_ecs_cluster.main.name
-
-  capacity_providers = [aws_ecs_capacity_provider.main.name]
-
-  default_capacity_provider_strategy {
-    capacity_provider = aws_ecs_capacity_provider.main.name
-    weight            = 1
-    base              = 1
-  }
-}
