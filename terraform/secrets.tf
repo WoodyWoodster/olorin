@@ -2,8 +2,9 @@
 
 # Database URL Secret
 resource "aws_secretsmanager_secret" "database_url" {
-  name        = "${var.project_name}/database_url"
-  description = "PostgreSQL database connection URL"
+  name                    = "${var.project_name}/database_url"
+  description             = "PostgreSQL database connection URL"
+  recovery_window_in_days = 0
 
   tags = {
     Name = "${var.project_name}-database-url"
@@ -17,8 +18,9 @@ resource "aws_secretsmanager_secret_version" "database_url" {
 
 # Rails Master Key Secret
 resource "aws_secretsmanager_secret" "rails_master_key" {
-  name        = "${var.project_name}/rails_master_key"
-  description = "Rails master key for encrypted credentials"
+  name                    = "${var.project_name}/rails_master_key"
+  description             = "Rails master key for encrypted credentials"
+  recovery_window_in_days = 0
 
   tags = {
     Name = "${var.project_name}-rails-master-key"
@@ -32,8 +34,9 @@ resource "aws_secretsmanager_secret_version" "rails_master_key" {
 
 # Rails Secret Key Base
 resource "aws_secretsmanager_secret" "secret_key_base" {
-  name        = "${var.project_name}/secret_key_base"
-  description = "Rails secret key base for session encryption"
+  name                    = "${var.project_name}/secret_key_base"
+  description             = "Rails secret key base for session encryption"
+  recovery_window_in_days = 0
 
   tags = {
     Name = "${var.project_name}-secret-key-base"

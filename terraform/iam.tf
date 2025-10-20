@@ -20,9 +20,124 @@ resource "aws_iam_role" "ecs_infrastructure" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_infrastructure" {
-  role       = aws_iam_role.ecs_infrastructure.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForManagedInstances"
+resource "aws_iam_role_policy" "ecs_infrastructure" {
+  name = "${var.project_name}-ecs-infrastructure-policy"
+  role = aws_iam_role.ecs_infrastructure.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "CreateLaunchTemplateForManagedInstances"
+        Effect = "Allow"
+        Action = ["ec2:CreateLaunchTemplate"]
+        Resource = ["arn:aws:ec2:*:*:launch-template/*"]
+        Condition = {
+          StringEquals = {
+            "aws:RequestTag/AmazonECSManaged" = "true"
+          }
+        }
+      },
+      {
+        Sid    = "CreateLaunchTemplateVersionsForManagedInstances"
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateLaunchTemplateVersion",
+          "ec2:ModifyLaunchTemplate"
+        ]
+        Resource = ["arn:aws:ec2:*:*:launch-template/*"]
+        Condition = {
+          StringEquals = {
+            "ec2:ManagedResourceOperator" = "ecs.amazonaws.com"
+          }
+        }
+      },
+      {
+        Sid    = "ProvisionEC2InstancesForManagedInstances"
+        Effect = "Allow"
+        Action = ["ec2:CreateFleet"]
+        Resource = [
+          "arn:aws:ec2:*:*:fleet/*",
+          "arn:aws:ec2:*:*:instance/*",
+          "arn:aws:ec2:*:*:network-interface/*",
+          "arn:aws:ec2:*:*:launch-template/*",
+          "arn:aws:ec2:*:*:security-group/*",
+          "arn:aws:ec2:*:*:subnet/*",
+          "arn:aws:ec2:*:*:volume/*",
+          "arn:aws:ec2:*:*:image/*"
+        ]
+      },
+      {
+        Sid    = "RunEC2InstancesForManagedInstances"
+        Effect = "Allow"
+        Action = ["ec2:RunInstances"]
+        Resource = [
+          "arn:aws:ec2:*:*:instance/*",
+          "arn:aws:ec2:*:*:network-interface/*",
+          "arn:aws:ec2:*:*:security-group/*",
+          "arn:aws:ec2:*:*:subnet/*",
+          "arn:aws:ec2:*:*:volume/*",
+          "arn:aws:ec2:*:*:image/*",
+          "arn:aws:ec2:*:*:launch-template/*"
+        ]
+      },
+      {
+        Sid      = "TagEC2ResourcesForManagedInstances"
+        Effect   = "Allow"
+        Action   = ["ec2:CreateTags"]
+        Resource = ["*"]
+      },
+      {
+        Sid    = "PassIAMRoleToEC2ForManagedInstances"
+        Effect = "Allow"
+        Action = ["iam:PassRole"]
+        Resource = [aws_iam_role.ecs_instance.arn]
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" = "ec2.amazonaws.com"
+          }
+        }
+      },
+      {
+        Sid    = "CreateServiceLinkedRoleForSpot"
+        Effect = "Allow"
+        Action = ["iam:CreateServiceLinkedRole"]
+        Resource = ["arn:aws:iam::*:role/aws-service-role/spot.amazonaws.com/*"]
+        Condition = {
+          StringEquals = {
+            "iam:AWSServiceName" = "spot.amazonaws.com"
+          }
+        }
+      },
+      {
+        Sid    = "DescribeEC2Resources"
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeInstanceTypes",
+          "ec2:DescribeLaunchTemplates",
+          "ec2:DescribeLaunchTemplateVersions",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeAvailabilityZones",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcs"
+        ]
+        Resource = ["*"]
+      },
+      {
+        Sid    = "TerminateEC2InstancesForManagedInstances"
+        Effect = "Allow"
+        Action = ["ec2:TerminateInstances"]
+        Resource = ["arn:aws:ec2:*:*:instance/*"]
+        Condition = {
+          StringEquals = {
+            "ec2:ManagedResourceOperator" = "ecs.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
 }
 
 # ECS Instance Role (for EC2 instances)
