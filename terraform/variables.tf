@@ -116,6 +116,12 @@ variable "secret_key_base" {
   sensitive   = true
 }
 
+variable "devise_jwt_secret" {
+  description = "Devise JWT secret key for token signing"
+  type        = string
+  sensitive   = true
+}
+
 variable "domain_name" {
   description = "Domain name for the application (optional)"
   type        = string

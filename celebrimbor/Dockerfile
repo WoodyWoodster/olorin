@@ -12,6 +12,10 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+# Accept API URL as build argument
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 RUN pnpm build
 
 FROM nginx:alpine AS production

@@ -63,6 +63,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Get ALB DNS name
+        id: alb-dns
+        run: |
+          ALB_DNS=$(aws elbv2 describe-load-balancers \
+            --names olorin-alb \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          echo "dns=$ALB_DNS" >> $GITHUB_OUTPUT
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -71,8 +81,12 @@ jobs:
         env:
           ECR_REPOSITORY: olorin/celebrimbor
           IMAGE_TAG: ${{ github.sha }}
+          VITE_API_URL: http://${{ steps.alb-dns.outputs.dns }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build \
+            --build-arg VITE_API_URL=$VITE_API_URL \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 

@@ -47,3 +47,19 @@ resource "aws_secretsmanager_secret_version" "secret_key_base" {
   secret_id     = aws_secretsmanager_secret.secret_key_base.id
   secret_string = var.secret_key_base
 }
+
+# Devise JWT Secret
+resource "aws_secretsmanager_secret" "devise_jwt_secret" {
+  name                    = "${var.project_name}/devise_jwt_secret"
+  description             = "Devise JWT secret key for token signing"
+  recovery_window_in_days = 0
+
+  tags = {
+    Name = "${var.project_name}-devise-jwt-secret"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "devise_jwt_secret" {
+  secret_id     = aws_secretsmanager_secret.devise_jwt_secret.id
+  secret_string = var.devise_jwt_secret
+}

@@ -1,0 +1,71 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import type { LoginRequest, LoginResponse, UserProfileResponse } from '../types/api'
+import apiClient from '../api/client'
+import { useAuthStore } from '../stores/auth'
+
+export function useLogin() {
+  const authStore = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (credentials: { email: string; password: string }) => {
+      const response = await apiClient.post<LoginResponse>('/users/sign_in', {
+        user: credentials
+      } as LoginRequest)
+
+      const token = response.headers['authorization']?.split(' ')[1]
+      if (!token) {
+        throw new Error('No token received from server')
+      }
+
+      return { token, user: response.data.user }
+    },
+    onSuccess: (data) => {
+      authStore.setToken(data.token)
+      authStore.user = data.user
+      // Invalidate and refetch user profile
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    },
+    onError: (error: any) => {
+      console.error('Login error:', error)
+    }
+  })
+}
+
+export function useLogout() {
+  const authStore = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async () => {
+      await apiClient.delete('/users/sign_out')
+    },
+    onSuccess: () => {
+      authStore.clearAuth()
+      queryClient.clear()
+    },
+    onError: (error: any) => {
+      // Even if API call fails, clear local auth
+      console.error('Logout error:', error)
+      authStore.clearAuth()
+      queryClient.clear()
+    }
+  })
+}
+
+export function useCurrentUser() {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const response = await apiClient.get<UserProfileResponse>('/api/v1/me')
+      const user = response.data.user
+      authStore.user = user
+      return user
+    },
+    enabled: !!authStore.token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false
+  })
+}

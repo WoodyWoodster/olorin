@@ -48,6 +48,10 @@ resource "aws_ecs_task_definition" "elessar" {
         {
           name      = "SECRET_KEY_BASE"
           valueFrom = aws_secretsmanager_secret_version.secret_key_base.arn
+        },
+        {
+          name      = "DEVISE_JWT_SECRET_KEY"
+          valueFrom = aws_secretsmanager_secret_version.devise_jwt_secret.arn
         }
       ]
 
@@ -120,6 +124,10 @@ resource "aws_ecs_task_definition" "elessar_migrate" {
         {
           name      = "SECRET_KEY_BASE"
           valueFrom = aws_secretsmanager_secret_version.secret_key_base.arn
+        },
+        {
+          name      = "DEVISE_JWT_SECRET_KEY"
+          valueFrom = aws_secretsmanager_secret_version.devise_jwt_secret.arn
         }
       ]
 
