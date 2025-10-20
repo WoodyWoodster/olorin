@@ -2,8 +2,13 @@
 
 class Users::SessionsController < Devise::SessionsController
   respond_to :json
+  before_action :configure_sign_in_params, only: [ :create ]
 
   private
+
+  def configure_sign_in_params
+    devise_parameter_sanitizer.permit(:sign_in, keys: [ :email, :password ])
+  end
 
   def respond_with(resource, _opts = {})
     render json: {

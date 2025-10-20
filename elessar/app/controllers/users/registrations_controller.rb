@@ -2,8 +2,13 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json
+  before_action :configure_sign_up_params, only: [ :create ]
 
   private
+
+  def configure_sign_up_params
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :email, :password, :password_confirmation ])
+  end
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
@@ -19,9 +24,5 @@ class Users::RegistrationsController < Devise::RegistrationsController
         message: "User couldn't be created successfully. #{resource.errors.full_messages.to_sentence}"
       }, status: :unprocessable_entity
     end
-  end
-
-  def sign_up_params
-    params.require(:user).permit(:email, :password, :password_confirmation)
   end
 end
