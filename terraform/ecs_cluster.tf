@@ -12,83 +12,41 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
-# Launch Template for ECS instances
-resource "aws_launch_template" "ecs" {
-  name_prefix   = "${var.project_name}-ecs-"
-  image_id      = data.aws_ssm_parameter.ecs_optimized_ami.value
-  instance_type = "t3.small"
-
-  iam_instance_profile {
-    arn = aws_iam_instance_profile.ecs_instance.arn
-  }
-
-  vpc_security_group_ids = [aws_security_group.ecs_tasks.id]
-
-  user_data = base64encode(<<-EOF
-              #!/bin/bash
-              echo ECS_CLUSTER=${aws_ecs_cluster.main.name} >> /etc/ecs/ecs.config
-              EOF
-  )
-
-  tag_specifications {
-    resource_type = "instance"
-    tags = {
-      Name = "${var.project_name}-ecs-instance"
-    }
-  }
-
-  tags = {
-    Name = "${var.project_name}-ecs-launch-template"
-  }
-}
-
-# Get latest ECS-optimized AMI
-data "aws_ssm_parameter" "ecs_optimized_ami" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id"
-}
-
-# Auto Scaling Group for ECS
-resource "aws_autoscaling_group" "ecs" {
-  name                = "${var.project_name}-ecs-asg"
-  vpc_zone_identifier = aws_subnet.private[*].id
-  desired_capacity    = 1
-  min_size            = 1
-  max_size            = 3
-
-  launch_template {
-    id      = aws_launch_template.ecs.id
-    version = "$Latest"
-  }
-
-  health_check_type         = "EC2"
-  health_check_grace_period = 300
-
-  tag {
-    key                 = "Name"
-    value               = "${var.project_name}-ecs-instance"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "AmazonECSManaged"
-    value               = "true"
-    propagate_at_launch = true
-  }
-}
-
-# ECS Capacity Provider
+# ECS Capacity Provider with Managed Instances
 resource "aws_ecs_capacity_provider" "main" {
   name = "${var.project_name}-capacity-provider"
 
-  auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.ecs.arn
-    managed_termination_protection = "DISABLED"
+  managed_instances_provider {
+    infrastructure_role_arn = aws_iam_role.ecs_infrastructure.arn
+    propagate_tags          = "TASK_DEFINITION"
 
-    managed_scaling {
-      maximum_scaling_step_size = 2
-      minimum_scaling_step_size = 1
-      status                    = "ENABLED"
-      target_capacity           = 80
+    instance_launch_template {
+      ec2_instance_profile_arn = aws_iam_instance_profile.ecs_instance.arn
+      monitoring               = "ENABLED"
+
+      network_configuration {
+        subnets         = aws_subnet.private[*].id
+        security_groups = [aws_security_group.ecs_tasks.id]
+      }
+
+      storage_configuration {
+        storage_size_gib = 30
+      }
+
+      instance_requirements {
+        memory_mib {
+          min = 512
+          max = 2048
+        }
+
+        vcpu_count {
+          min = 1
+          max = 2
+        }
+
+        instance_generations = ["current"]
+        cpu_manufacturers    = ["intel", "amd"]
+      }
     }
   }
 

@@ -1,3 +1,30 @@
+# ECS Infrastructure Role (for ECS to manage instances)
+resource "aws_iam_role" "ecs_infrastructure" {
+  name = "${var.project_name}-ecs-infrastructure-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name = "${var.project_name}-ecs-infrastructure-role"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_infrastructure" {
+  role       = aws_iam_role.ecs_infrastructure.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForManagedInstances"
+}
+
 # ECS Instance Role (for EC2 instances)
 resource "aws_iam_role" "ecs_instance" {
   name = "${var.project_name}-ecs-instance-role"
