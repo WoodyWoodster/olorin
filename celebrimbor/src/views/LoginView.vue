@@ -1,11 +1,20 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4 py-12">
+  <div
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4 py-12"
+  >
     <div class="w-full max-w-md">
       <!-- Company Branding -->
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-xl mb-4">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-xl mb-4"
+        >
           <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+            />
           </svg>
         </div>
         <h1 class="text-3xl font-bold text-slate-900 mb-2">Olorin ERP</h1>
@@ -15,7 +24,9 @@
       <!-- Login Card -->
       <Card class="border-slate-200 shadow-xl">
         <CardHeader class="space-y-1 pb-6">
-          <CardTitle class="text-2xl font-bold text-center text-slate-900">Sign in to your account</CardTitle>
+          <CardTitle class="text-2xl font-bold text-center text-slate-900"
+            >Sign in to your account</CardTitle
+          >
           <CardDescription class="text-center text-slate-600">
             Enter your credentials to access your dashboard
           </CardDescription>
@@ -36,7 +47,9 @@
             <div class="space-y-2">
               <Label for="email" class="text-slate-700 font-medium">Email address</Label>
               <div class="relative">
-                <Mail class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Mail
+                  class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"
+                />
                 <Input
                   id="email"
                   v-model="email"
@@ -58,7 +71,9 @@
                 </a>
               </div>
               <div class="relative">
-                <Lock class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Lock
+                  class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"
+                />
                 <Input
                   id="password"
                   v-model="password"
@@ -93,19 +108,14 @@
               <span v-else>Sign in</span>
             </Button>
           </form>
-
-          <!-- Test Credentials Info -->
-          <div class="mt-6 p-3 bg-slate-50 border border-slate-200 rounded-lg">
-            <p class="text-xs text-slate-600 text-center">
-              <span class="font-semibold">Test credentials:</span> test@example.com / password
-            </p>
-          </div>
         </CardContent>
 
         <CardFooter class="flex flex-col space-y-4 border-t border-slate-100 pt-6">
           <div class="text-sm text-center text-slate-600">
             Don't have an account?
-            <router-link to="/signup" class="text-indigo-600 hover:text-indigo-700 font-semibold">Sign up</router-link>
+            <router-link to="/signup" class="text-indigo-600 hover:text-indigo-700 font-semibold"
+              >Sign up</router-link
+            >
           </div>
         </CardFooter>
       </Card>
@@ -125,7 +135,14 @@ import { Mail, Lock, Loader2, AlertCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useLogin } from '@/composables/useAuth'
 import axios from 'axios'
@@ -152,7 +169,7 @@ async function handleLogin() {
   try {
     await loginMutation.mutateAsync({
       email: email.value,
-      password: password.value
+      password: password.value,
     })
     router.push('/dashboard')
   } catch (error) {
