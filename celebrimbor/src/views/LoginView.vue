@@ -150,8 +150,8 @@ import axios from 'axios'
 const router = useRouter()
 const loginMutation = useLogin()
 
-const email = ref('test@example.com')
-const password = ref('password')
+const email = ref('')
+const password = ref('')
 
 const errorMessage = computed(() => {
   const error = loginMutation.error.value
