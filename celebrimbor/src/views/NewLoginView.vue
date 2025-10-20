@@ -28,7 +28,7 @@
               <AlertCircle class="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>
-                {{  loginMutation.error.value?.response?.data?.message || 'Login failed. Please try again.' }}
+                {{ errorMessage }}
               </AlertDescription>
             </Alert>
 
@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Mail, Lock, Loader2, AlertCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
@@ -128,12 +128,25 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useLogin } from '@/composables/useAuth'
+import axios from 'axios'
 
 const router = useRouter()
 const loginMutation = useLogin()
 
 const email = ref('test@example.com')
 const password = ref('password')
+
+const errorMessage = computed(() => {
+  const error = loginMutation.error.value
+  if (!error) return ''
+
+  // Check if it's an Axios error with response data
+  if (axios.isAxiosError(error) && error.response?.data?.message) {
+    return error.response.data.message
+  }
+
+  return 'Login failed. Please try again.'
+})
 
 async function handleLogin() {
   try {
