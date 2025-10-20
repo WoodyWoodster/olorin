@@ -26,7 +26,7 @@ export function useLogin() {
       // Invalidate and refetch user profile
       queryClient.invalidateQueries({ queryKey: ['currentUser'] })
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Login error:', error)
     }
   })
@@ -44,7 +44,7 @@ export function useLogout() {
       authStore.clearAuth()
       queryClient.clear()
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // Even if API call fails, clear local auth
       console.error('Logout error:', error)
       authStore.clearAuth()

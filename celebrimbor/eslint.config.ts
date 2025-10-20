@@ -24,5 +24,14 @@ export default defineConfigWithVueTs(
     ...pluginVitest.configs.recommended,
     files: ['src/**/__tests__/*'],
   },
+
+  {
+    name: 'app/ui-components-override',
+    files: ['src/components/ui/**/*.vue', 'src/components/layout/*.vue'],
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    },
+  },
+
   skipFormatting,
 )
