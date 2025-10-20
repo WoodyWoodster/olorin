@@ -14,7 +14,8 @@ resource "aws_ecs_cluster" "main" {
 
 # ECS Capacity Provider with Managed Instances
 resource "aws_ecs_capacity_provider" "main" {
-  name = "${var.project_name}-capacity-provider"
+  name    = "${var.project_name}-capacity-provider"
+  cluster = aws_ecs_cluster.main.name
 
   managed_instances_provider {
     infrastructure_role_arn = aws_iam_role.ecs_infrastructure.arn
