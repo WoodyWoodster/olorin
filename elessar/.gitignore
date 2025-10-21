@@ -106,3 +106,5 @@ Thumbs.db
 # Misc
 /node_modules
 /yarn-error.log
+
+/docs/
