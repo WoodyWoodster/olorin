@@ -1,0 +1,52 @@
+<template>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900">Warehouses</h1>
+        <p class="mt-2 text-sm text-slate-600">Manage warehouse locations</p>
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-slate-200 bg-white">
+      <div v-if="isLoading" class="p-12 text-center">
+        <p class="text-slate-600">Loading warehouses...</p>
+      </div>
+      <div v-else-if="error" class="p-12 text-center">
+        <p class="text-red-600">Error loading warehouses</p>
+      </div>
+      <div v-else-if="!warehouses?.length" class="p-12 text-center">
+        <WarehouseIcon class="mx-auto h-12 w-12 text-slate-400" />
+        <p class="mt-4 text-lg font-medium text-slate-900">No warehouses found</p>
+        <p class="mt-2 text-sm text-slate-600">Get started by creating a new warehouse</p>
+      </div>
+      <table v-else class="w-full">
+        <thead class="border-b border-slate-200 bg-slate-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Code</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+          <tr v-for="warehouse in warehouses" :key="warehouse.id" class="hover:bg-slate-50">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">{{ warehouse.code }}</td>
+            <td class="px-6 py-4 text-sm text-slate-900">{{ warehouse.name }}</td>
+            <td class="px-6 py-4 text-sm">
+              <span class="inline-flex rounded-full px-2 text-xs font-semibold leading-5"
+                :class="warehouse.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                {{ warehouse.is_active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Warehouse as WarehouseIcon } from 'lucide-vue-next'
+import { useWarehouses } from '@/composables/useWarehouses'
+
+const { data: warehouses, isLoading, error } = useWarehouses()
+</script>
