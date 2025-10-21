@@ -15,9 +15,9 @@
       <!-- Signup Card -->
       <Card class="border-stone-200 shadow-xl">
         <CardHeader class="space-y-1 pb-6">
-          <CardTitle class="text-2xl font-bold text-center text-stone-900">Create your account</CardTitle>
+          <CardTitle class="text-2xl font-bold text-center text-stone-900">Create your organization</CardTitle>
           <CardDescription class="text-center text-stone-600">
-            Enter your details to get started
+            Set up your organization and admin account
           </CardDescription>
         </CardHeader>
 
@@ -31,6 +31,44 @@
                 {{ errorMessage }}
               </AlertDescription>
             </Alert>
+
+            <!-- Organization Name Input -->
+            <div class="space-y-2">
+              <Label for="organization_name" class="text-stone-700 font-medium">Organization Name</Label>
+              <div class="relative">
+                <Building class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-stone-400" />
+                <Input
+                  id="organization_name"
+                  v-model="organizationName"
+                  type="text"
+                  placeholder="Acme Inc."
+                  required
+                  class="pl-10 h-11 border-stone-300 focus:border-orange-500 focus:ring-orange-500"
+                  :disabled="registerMutation.isPending.value"
+                />
+              </div>
+            </div>
+
+            <!-- Organization Subdomain Input -->
+            <div class="space-y-2">
+              <Label for="subdomain" class="text-stone-700 font-medium">Subdomain</Label>
+              <div class="relative">
+                <Globe class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-stone-400" />
+                <Input
+                  id="subdomain"
+                  v-model="subdomain"
+                  type="text"
+                  placeholder="acme"
+                  required
+                  pattern="[a-z0-9-]+"
+                  class="pl-10 h-11 border-stone-300 focus:border-orange-500 focus:ring-orange-500"
+                  :disabled="registerMutation.isPending.value"
+                />
+              </div>
+              <p class="text-xs text-stone-500">Lowercase letters, numbers, and hyphens only</p>
+            </div>
+
+            <div class="border-t border-stone-200 my-4"></div>
 
             <!-- Email Input -->
             <div class="space-y-2">
@@ -114,7 +152,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Mail, Lock, Loader2, AlertCircle } from 'lucide-vue-next'
+import { Mail, Lock, Loader2, AlertCircle, Building, Globe } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -126,6 +164,8 @@ import axios from 'axios'
 const router = useRouter()
 const registerMutation = useRegister()
 
+const organizationName = ref('')
+const subdomain = ref('')
 const email = ref('')
 const password = ref('')
 const passwordConfirmation = ref('')
@@ -145,6 +185,10 @@ const errorMessage = computed(() => {
 async function handleSignup() {
   try {
     await registerMutation.mutateAsync({
+      organization: {
+        name: organizationName.value,
+        subdomain: subdomain.value
+      },
       email: email.value,
       password: password.value,
       password_confirmation: passwordConfirmation.value

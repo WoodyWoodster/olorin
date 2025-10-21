@@ -22,6 +22,10 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
+  organization: {
+    name: string
+    subdomain: string
+  }
   user: {
     email: string
     password: string

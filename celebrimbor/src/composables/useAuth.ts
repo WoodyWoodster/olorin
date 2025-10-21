@@ -36,9 +36,19 @@ export function useRegister() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (credentials: { email: string; password: string; password_confirmation: string }) => {
+    mutationFn: async (data: {
+      organization: { name: string; subdomain: string }
+      email: string
+      password: string
+      password_confirmation: string
+    }) => {
       const response = await apiClient.post<RegisterResponse>('/api/auth/signup', {
-        user: credentials
+        organization: data.organization,
+        user: {
+          email: data.email,
+          password: data.password,
+          password_confirmation: data.password_confirmation
+        }
       } as RegisterRequest)
 
       const token = response.headers['authorization']?.split(' ')[1]
