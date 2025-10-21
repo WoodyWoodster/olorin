@@ -139,6 +139,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
+import type { Subscription } from '@rails/actioncable'
 import cable from '@/utils/actioncable'
 
 interface DetectedDockerfile {
@@ -158,6 +159,14 @@ interface DockerfileData {
   appBaseName: string
 }
 
+interface ChannelMessage {
+  status: 'detecting' | 'found' | 'completed' | 'error'
+  message?: string
+  dockerfile?: DetectedDockerfile
+  error?: string
+  suggestion?: string
+}
+
 interface Props {
   modelValue: DockerfileData
 }
@@ -174,7 +183,7 @@ const detectedDockerfiles = ref<DetectedDockerfile[]>(props.modelValue.detectedD
 const selectedDockerfiles = ref<string[]>(props.modelValue.selectedDockerfiles || [])
 const error = ref<{ title: string; message: string; suggestion?: string } | null>(null)
 
-let subscription: any = null
+let subscription: Subscription | null = null
 
 const appBaseName = computed(() => props.modelValue.appBaseName || 'app')
 
@@ -231,7 +240,7 @@ function startDetection() {
       disconnected() {
       },
 
-      received(data: any) {
+      received(data: ChannelMessage) {
         if (data.status === 'detecting') {
           statusMessage.value = data.message || 'Scanning for Dockerfiles...'
         }
