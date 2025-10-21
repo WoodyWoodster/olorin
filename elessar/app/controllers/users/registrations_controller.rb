@@ -3,7 +3,7 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json
   before_action :configure_sign_up_params, only: [ :create ]
-  after_action :set_jwt_cookie, only: [:create]
+  after_action :set_jwt_cookie, only: [ :create ]
 
   private
 

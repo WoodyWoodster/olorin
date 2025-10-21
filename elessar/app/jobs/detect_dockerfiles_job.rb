@@ -4,38 +4,43 @@ class DetectDockerfilesJob < ApplicationJob
   def perform(user_id, git_url, branch)
     user = User.find(user_id)
 
-    # Create a temporary directory for cloning
     Dir.mktmpdir do |tmpdir|
       begin
-        # Broadcast detecting status
-        broadcast_to_user(user, status: 'detecting', message: 'Cloning repository...')
-
-        # Clone the repository (shallow clone for speed)
-        clone_result = system("git clone --depth 1 --branch #{branch} #{git_url} #{tmpdir}/repo 2>&1")
-
-        unless clone_result
-          broadcast_error(user, 'Clone Failed', "Could not clone repository from #{git_url}",
-                         'Verify the repository URL and branch name are correct, and that you have access.')
-          return
-        end
+        broadcast_to_user(user, status: "detecting", message: "Cloning repository...")
 
         repo_path = "#{tmpdir}/repo"
+
+        clone_result = system(
+          "git", "clone",
+          "--depth", "1",
+          "--branch", branch,
+          git_url,
+          repo_path,
+          out: File::NULL,
+          err: File::NULL
+        )
+
+        unless clone_result
+          broadcast_error(user, "Clone Failed", "Could not clone repository from #{git_url}",
+                         "Verify the repository URL and branch name are correct, and that you have access.")
+          return
+        end
 
         # Find all Dockerfiles
         dockerfiles = find_dockerfiles(repo_path)
 
         if dockerfiles.empty?
-          broadcast_to_user(user, status: 'completed')
+          broadcast_to_user(user, status: "completed")
           return
         end
 
         # Parse and broadcast each Dockerfile
         dockerfiles.each do |dockerfile_path|
-          relative_path = dockerfile_path.gsub("#{repo_path}/", './')
+          relative_path = dockerfile_path.gsub("#{repo_path}/", "./")
           parsed_data = parse_dockerfile(dockerfile_path)
 
           broadcast_to_user(user,
-            status: 'found',
+            status: "found",
             dockerfile: {
               path: relative_path,
               base_image: parsed_data[:base_image],
@@ -48,12 +53,12 @@ class DetectDockerfilesJob < ApplicationJob
         end
 
         # Broadcast completion
-        broadcast_to_user(user, status: 'completed', message: "Found #{dockerfiles.count} Dockerfile(s)")
+        broadcast_to_user(user, status: "completed", message: "Found #{dockerfiles.count} Dockerfile(s)")
 
       rescue StandardError => e
         Rails.logger.error "Dockerfile detection error: #{e.message}"
         Rails.logger.error e.backtrace.join("\n")
-        broadcast_error(user, 'Detection Error', e.message, 'Please try again or contact support if the issue persists.')
+        broadcast_error(user, "Detection Error", e.message, "Please try again or contact support if the issue persists.")
       end
     end
   end
@@ -64,7 +69,7 @@ class DetectDockerfilesJob < ApplicationJob
     # Find all files named Dockerfile or Dockerfile.*
     Dir.glob("#{path}/**/Dockerfile*").select { |f| File.file?(f) }.sort_by do |f|
       # Prioritize Dockerfile.prod over regular Dockerfile
-      f.include?('.prod') ? 0 : 1
+      f.include?(".prod") ? 0 : 1
     end
   end
 
@@ -103,28 +108,28 @@ class DetectDockerfilesJob < ApplicationJob
   def detect_runtime_from_image(image, data)
     case image.downcase
     when /^node:(.+)/
-      data[:runtime] = 'Node.js'
-      data[:version] = $1.split('-').first
+      data[:runtime] = "Node.js"
+      data[:version] = $1.split("-").first
     when /^python:(.+)/
-      data[:runtime] = 'Python'
-      data[:version] = $1.split('-').first
+      data[:runtime] = "Python"
+      data[:version] = $1.split("-").first
     when /^ruby:(.+)/
-      data[:runtime] = 'Ruby'
-      data[:version] = $1.split('-').first
+      data[:runtime] = "Ruby"
+      data[:version] = $1.split("-").first
     when /^golang:(.+)/, /^go:(.+)/
-      data[:runtime] = 'Go'
-      data[:version] = $1.split('-').first
+      data[:runtime] = "Go"
+      data[:version] = $1.split("-").first
     when /^openjdk:(.+)/, /^java:(.+)/
-      data[:runtime] = 'Java'
-      data[:version] = $1.split('-').first
+      data[:runtime] = "Java"
+      data[:version] = $1.split("-").first
     when /^php:(.+)/
-      data[:runtime] = 'PHP'
-      data[:version] = $1.split('-').first
+      data[:runtime] = "PHP"
+      data[:version] = $1.split("-").first
     when /^nginx:(.+)/
-      data[:runtime] = 'Nginx'
-      data[:version] = $1.split('-').first
+      data[:runtime] = "Nginx"
+      data[:version] = $1.split("-").first
     when /^alpine/, /^ubuntu/, /^debian/
-      data[:runtime] = 'Linux'
+      data[:runtime] = "Linux"
     end
   end
 
@@ -134,7 +139,7 @@ class DetectDockerfilesJob < ApplicationJob
 
   def broadcast_error(user, title, message, suggestion = nil)
     broadcast_to_user(user, {
-      status: 'error',
+      status: "error",
       error: title,
       message: message,
       suggestion: suggestion

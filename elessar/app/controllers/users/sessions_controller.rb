@@ -2,7 +2,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   respond_to :json
-  after_action :set_jwt_cookie, only: [:create]
+  after_action :set_jwt_cookie, only: [ :create ]
 
   private
 

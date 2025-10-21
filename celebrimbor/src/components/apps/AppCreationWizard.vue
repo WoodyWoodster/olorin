@@ -149,11 +149,14 @@ function getSuffixFromPath(path: string): string {
     return directory
   }
 
-  // Check if filename has a suffix (e.g., "Dockerfile.frontend")
   const filename = parts[parts.length - 1]
+  if (!filename) {
+    return ''
+  }
+
   const filenameParts = filename.split('.')
   if (filenameParts.length > 2) {
-    return filenameParts[filenameParts.length - 1]
+    return filenameParts[filenameParts.length - 1] || ''
   }
 
   return ''

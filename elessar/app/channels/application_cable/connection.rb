@@ -69,7 +69,7 @@ module ApplicationCable
 
       return nil unless session_cookie
 
-      if warden_data = session_cookie['warden.user.user.key']
+      if warden_data = session_cookie["warden.user.user.key"]
         user_id = extract_user_id_from_warden(warden_data)
         User.find_by(id: user_id) if user_id
       end

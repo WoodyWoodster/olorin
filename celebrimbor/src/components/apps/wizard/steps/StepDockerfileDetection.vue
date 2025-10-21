@@ -254,7 +254,7 @@ function startDetection() {
           isDetecting.value = false
           statusMessage.value = 'Scan complete'
 
-          if (detectedDockerfiles.value.length === 1) {
+          if (detectedDockerfiles.value.length === 1 && detectedDockerfiles.value[0]) {
             selectedDockerfiles.value = [detectedDockerfiles.value[0].path]
           }
 
