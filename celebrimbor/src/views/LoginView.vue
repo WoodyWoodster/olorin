@@ -17,8 +17,7 @@
             />
           </svg>
         </div>
-        <h1 class="text-3xl font-bold text-stone-900 mb-2">Olorin PaaS</h1>
-        <p class="text-stone-600">Enterprise Resource Planning</p>
+        <h1 class="text-3xl font-bold text-stone-900 mb-2">Olorin</h1>
       </div>
 
       <!-- Login Card -->
@@ -122,7 +121,7 @@
 
       <!-- Footer -->
       <div class="mt-8 text-center text-sm text-stone-500">
-        <p>&copy; 2025 Olorin PaaS. All rights reserved.</p>
+        <p>&copy; 2025 Olorin. All rights reserved.</p>
       </div>
     </div>
   </div>

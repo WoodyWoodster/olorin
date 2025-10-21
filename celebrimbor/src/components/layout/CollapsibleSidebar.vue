@@ -2,11 +2,7 @@
   <!-- Backdrop -->
   <Teleport to="body">
     <Transition name="backdrop">
-      <div
-        v-if="isOpen"
-        class="fixed inset-0 z-40 bg-black/50"
-        @click="close"
-      />
+      <div v-if="isOpen" class="fixed inset-0 z-40 bg-black/50" @click="close" />
     </Transition>
 
     <!-- Sidebar -->
@@ -20,10 +16,15 @@
           <div class="flex items-center space-x-3">
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-600">
               <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
               </svg>
             </div>
-            <h1 class="text-lg font-bold text-stone-900">Olorin PaaS</h1>
+            <h1 class="text-lg font-bold text-stone-900">Olorin</h1>
           </div>
           <button
             @click="close"
@@ -40,9 +41,11 @@
             :key="item.name"
             :to="item.href"
             class="flex items-center rounded-xl px-3 py-2 text-sm font-medium transition-colors"
-            :class="isActive(item.href)
-              ? 'bg-orange-50 text-orange-600'
-              : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'"
+            :class="
+              isActive(item.href)
+                ? 'bg-orange-50 text-orange-600'
+                : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'
+            "
             @click="close"
           >
             <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" />
@@ -65,12 +68,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import {
-  X,
-  LayoutDashboard,
-  Rocket,
-  Settings
-} from 'lucide-vue-next'
+import { X, LayoutDashboard, Rocket, Settings } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()

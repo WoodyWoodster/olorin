@@ -4,13 +4,16 @@
     <div>
       <h1 class="text-3xl font-bold text-stone-900">Dashboard</h1>
       <p class="mt-2 text-sm text-stone-600">
-        Welcome to Olorin PaaS - Deploy and manage your applications
+        Welcome to Olorin - Deploy and manage your applications
       </p>
     </div>
 
     <!-- Quick Actions -->
     <div class="grid gap-6 md:grid-cols-3">
-      <div class="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md cursor-pointer" @click="openNewAppWizard">
+      <div
+        class="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md cursor-pointer"
+        @click="openNewAppWizard"
+      >
         <div class="flex items-center gap-3">
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100">
             <Rocket class="h-6 w-6 text-orange-600" />
@@ -22,7 +25,10 @@
         </div>
       </div>
 
-      <div class="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md cursor-pointer" @click="viewApps">
+      <div
+        class="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md cursor-pointer"
+        @click="viewApps"
+      >
         <div class="flex items-center gap-3">
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
             <LayoutGrid class="h-6 w-6 text-green-700" />
@@ -34,7 +40,9 @@
         </div>
       </div>
 
-      <div class="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md cursor-pointer">
+      <div
+        class="rounded-xl border border-stone-200 bg-white p-6 transition-shadow hover:shadow-md cursor-pointer"
+      >
         <div class="flex items-center gap-3">
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100">
             <Database class="h-6 w-6 text-amber-600" />
@@ -110,10 +118,7 @@
             <Plus class="mr-1 inline h-4 w-4" />
             New App
           </button>
-          <router-link
-            to="/apps"
-            class="text-sm font-medium text-orange-600 hover:text-orange-700"
-          >
+          <router-link to="/apps" class="text-sm font-medium text-orange-600 hover:text-orange-700">
             View All →
           </router-link>
         </div>
@@ -190,7 +195,7 @@ const { data: apps } = useApps()
 const createMutation = useCreateApp()
 
 const runningApps = computed(() => {
-  return apps.value?.filter(app => app.status === 'running').length || 0
+  return apps.value?.filter((app) => app.status === 'running').length || 0
 })
 
 const recentApps = computed(() => {
@@ -214,14 +219,14 @@ async function handleCreateApp(formData: AppFormData) {
     await createMutation.mutateAsync({ app: formData })
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     toast.success('App created successfully', {
-      description: `${formData.name} (${formData.subdomain}) - ${time}`
+      description: `${formData.name} (${formData.subdomain}) - ${time}`,
     })
     isNewAppWizardOpen.value = false
   } catch (error: unknown) {
     console.error('Error creating app:', error)
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
     toast.error('Failed to create app', {
-      description: errorMessage
+      description: errorMessage,
     })
   }
 }
@@ -235,14 +240,14 @@ async function handleCreateMultipleApps(apps: AppFormData[]) {
 
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     toast.success(`${apps.length} apps created successfully`, {
-      description: `${apps.map(a => a.name).join(', ')} - ${time}`
+      description: `${apps.map((a) => a.name).join(', ')} - ${time}`,
     })
     isNewAppWizardOpen.value = false
   } catch (error: unknown) {
     console.error('Error creating apps:', error)
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
     toast.error('Failed to create apps', {
-      description: errorMessage
+      description: errorMessage,
     })
   }
 }
