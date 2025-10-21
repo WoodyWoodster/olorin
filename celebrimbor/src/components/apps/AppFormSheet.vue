@@ -2,9 +2,9 @@
   <Sheet v-model:open="isOpen">
     <SheetContent class="sm:max-w-2xl overflow-y-auto">
       <SheetHeader>
-        <SheetTitle>{{ appId ? 'Edit App' : 'New App' }}</SheetTitle>
+        <SheetTitle>Edit App</SheetTitle>
         <SheetDescription>
-          {{ appId ? 'Update app information below.' : 'Fill out the form to create a new app.' }}
+          Update app information below.
         </SheetDescription>
       </SheetHeader>
 
@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import { useApp, useCreateApp, useUpdateApp } from '@/composables/useApps'
+import { useApp, useUpdateApp } from '@/composables/useApps'
 import { useFormDirty } from '@/composables/useFormDirty'
 import AppForm from './AppForm.vue'
 import {
@@ -62,12 +62,11 @@ import {
 } from '@/components/ui/alert-dialog'
 
 interface Props {
-  appId?: number | null
+  appId: number
   open?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  appId: null,
   open: false
 })
 
@@ -91,18 +90,16 @@ const appFormRef = ref<InstanceType<typeof AppForm> | null>(null)
 const showConfirmDialog = ref(false)
 const pendingClose = ref(false)
 
-// Load existing app if editing
-const { data: existingApp } = useApp(props.appId?.toString() || '')
+// Load existing app
+const { data: existingApp } = useApp(props.appId.toString())
 
 // Track form dirty state
 const { isDirty, resetDirty, markClean } = useFormDirty(
   computed(() => appFormRef.value?.form || {})
 )
 
-// Mutations
-const createMutation = useCreateApp()
-const updateMutation = useUpdateApp()
-const mutation = computed(() => props.appId ? updateMutation : createMutation)
+// Mutation
+const mutation = useUpdateApp()
 
 // Reset dirty state when app data loads
 watch(existingApp, () => {
@@ -114,29 +111,20 @@ watch(existingApp, () => {
 // Handle form submission
 async function handleSubmit(formData: any) {
   try {
-    let result
-    if (props.appId) {
-      result = await updateMutation.mutateAsync({
-        id: props.appId,
-        data: { app: formData }
-      })
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      toast.success('App updated successfully', {
-        description: `${formData.name} (${formData.subdomain}) - ${time}`
-      })
-    } else {
-      result = await createMutation.mutateAsync({ app: formData })
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      toast.success('App created successfully', {
-        description: `${formData.name} (${formData.subdomain}) - ${time}`
-      })
-    }
+    await mutation.mutateAsync({
+      id: props.appId,
+      data: { app: formData }
+    })
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    toast.success('App updated successfully', {
+      description: `${formData.name} (${formData.subdomain}) - ${time}`
+    })
     markClean()
     emit('update:open', false)
     emit('success')
   } catch (error: any) {
-    console.error('Error saving app:', error)
-    toast.error(props.appId ? 'Failed to update app' : 'Failed to create app', {
+    console.error('Error updating app:', error)
+    toast.error('Failed to update app', {
       description: error?.message || 'An unexpected error occurred'
     })
   }

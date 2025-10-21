@@ -32,47 +32,47 @@
     <!-- App Details -->
     <div v-else-if="app" class="grid gap-6">
       <!-- Basic Info -->
-      <Card>
+      <Card class="rounded-xl border-stone-200">
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+          <CardTitle class="text-stone-900">Basic Information</CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
           <div>
-            <Label class="text-muted-foreground">Name</Label>
-            <p class="font-medium">{{ app.name }}</p>
+            <Label class="text-stone-600">Name</Label>
+            <p class="font-medium text-stone-900">{{ app.name }}</p>
           </div>
           <div>
-            <Label class="text-muted-foreground">Subdomain</Label>
-            <p class="font-medium">{{ app.subdomain }}</p>
+            <Label class="text-stone-600">Subdomain</Label>
+            <p class="font-medium text-stone-900">{{ app.subdomain }}</p>
           </div>
           <div v-if="app.git_url">
-            <Label class="text-muted-foreground">Git Repository</Label>
-            <p class="font-medium">{{ app.git_url }}</p>
+            <Label class="text-stone-600">Git Repository</Label>
+            <p class="font-medium text-stone-900">{{ app.git_url }}</p>
           </div>
           <div v-if="app.description">
-            <Label class="text-muted-foreground">Description</Label>
-            <p class="font-medium">{{ app.description }}</p>
+            <Label class="text-stone-600">Description</Label>
+            <p class="font-medium text-stone-900">{{ app.description }}</p>
           </div>
         </CardContent>
       </Card>
 
       <!-- Deployments Section (Placeholder) -->
-      <Card>
+      <Card class="rounded-xl border-stone-200">
         <CardHeader>
-          <CardTitle>Recent Deployments</CardTitle>
+          <CardTitle class="text-stone-900">Recent Deployments</CardTitle>
         </CardHeader>
         <CardContent>
-          <p class="text-muted-foreground text-center py-4">No deployments yet</p>
+          <p class="text-stone-600 text-center py-4">No deployments yet</p>
         </CardContent>
       </Card>
 
       <!-- Add-ons Section (Placeholder) -->
-      <Card>
+      <Card class="rounded-xl border-stone-200">
         <CardHeader>
-          <CardTitle>Add-ons</CardTitle>
+          <CardTitle class="text-stone-900">Add-ons</CardTitle>
         </CardHeader>
         <CardContent>
-          <p class="text-muted-foreground text-center py-4">No add-ons configured</p>
+          <p class="text-stone-600 text-center py-4">No add-ons configured</p>
         </CardContent>
       </Card>
     </div>

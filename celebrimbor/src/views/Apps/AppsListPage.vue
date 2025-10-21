@@ -34,14 +34,14 @@
       <Card
         v-for="app in apps"
         :key="app.id"
-        class="cursor-pointer hover:shadow-md transition-shadow"
+        class="cursor-pointer hover:shadow-md transition-shadow rounded-xl border-stone-200"
         @click="viewApp(app.id)"
       >
         <CardHeader>
           <div class="flex items-start justify-between">
             <div class="flex-1">
-              <CardTitle>{{ app.name }}</CardTitle>
-              <CardDescription class="mt-1">
+              <CardTitle class="text-stone-900">{{ app.name }}</CardTitle>
+              <CardDescription class="mt-1 text-stone-600">
                 {{ app.subdomain }}.yourplatform.com
               </CardDescription>
             </div>
@@ -51,21 +51,23 @@
           </div>
         </CardHeader>
         <CardContent>
-          <p v-if="app.description" class="text-sm text-muted-foreground line-clamp-2">
+          <p v-if="app.description" class="text-sm text-stone-600 line-clamp-2">
             {{ app.description }}
           </p>
-          <p v-else class="text-sm text-muted-foreground italic">No description</p>
+          <p v-else class="text-sm text-stone-500 italic">No description</p>
         </CardContent>
-        <CardFooter class="text-sm text-muted-foreground">
+        <CardFooter class="text-sm text-stone-500">
           Created {{ formatDate(app.created_at) }}
         </CardFooter>
       </Card>
     </div>
 
-    <!-- App Form Sheet -->
-    <AppFormSheet
-      v-model:open="isNewAppSheetOpen"
-      @success="handleAppCreated"
+    <!-- App Creation Wizard -->
+    <AppCreationWizard
+      v-model:open="isNewAppWizardOpen"
+      :is-submitting="createMutation.isPending.value"
+      @submit="handleCreateApp"
+      @cancel="isNewAppWizardOpen = false"
     />
   </div>
 </template>
@@ -74,23 +76,41 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Plus } from 'lucide-vue-next'
-import { useApps } from '@/composables/useApps'
-import AppFormSheet from '@/components/apps/AppFormSheet.vue'
+import { toast } from 'vue-sonner'
+import { useApps, useCreateApp } from '@/composables/useApps'
+import AppCreationWizard from '@/components/apps/AppCreationWizard.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
 const router = useRouter()
-const isNewAppSheetOpen = ref(false)
+const isNewAppWizardOpen = ref(false)
 
 const { data: apps, isLoading, error } = useApps()
+const createMutation = useCreateApp()
 
 function openNewAppSheet() {
-  isNewAppSheetOpen.value = true
+  isNewAppWizardOpen.value = true
 }
 
 function viewApp(id: number) {
   router.push(`/apps/${id}`)
+}
+
+async function handleCreateApp(formData: any) {
+  try {
+    await createMutation.mutateAsync({ app: formData })
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    toast.success('App created successfully', {
+      description: `${formData.name} (${formData.subdomain}) - ${time}`
+    })
+    isNewAppWizardOpen.value = false
+  } catch (error: any) {
+    console.error('Error creating app:', error)
+    toast.error('Failed to create app', {
+      description: error?.message || 'An unexpected error occurred'
+    })
+  }
 }
 
 function handleAppCreated() {
