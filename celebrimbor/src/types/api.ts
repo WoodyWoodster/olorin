@@ -168,3 +168,6 @@ export interface CreateEnvVarRequest {
 export interface UpdateEnvVarRequest {
   env_var: Partial<CreateEnvVarRequest['env_var']>
 }
+
+// Type aliases for form data
+export type AppFormData = CreateAppRequest['app']

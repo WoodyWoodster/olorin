@@ -68,7 +68,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { App } from '@/types/api'
+import type { App, AppFormData } from '@/types/api'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -84,7 +84,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'submit': [formData: any]
+  'submit': [formData: AppFormData]
   'cancel': []
 }>()
 

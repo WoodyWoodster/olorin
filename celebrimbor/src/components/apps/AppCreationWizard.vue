@@ -73,6 +73,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import type { AppTemplate } from './wizard/templates'
+import type { AppFormData } from '@/types/api'
 
 interface Props {
   open?: boolean
@@ -86,7 +87,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
-  'submit': [data: any]
+  'submit': [data: AppFormData]
   'cancel': []
 }>()
 
@@ -239,7 +240,7 @@ function loadDraft() {
       } else {
         clearDraft()
       }
-    } catch (e) {
+    } catch {
       clearDraft()
     }
   }

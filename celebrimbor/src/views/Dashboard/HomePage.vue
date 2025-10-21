@@ -179,6 +179,7 @@ import { useRouter } from 'vue-router'
 import { Rocket, Database, LayoutGrid, Activity, GitBranch, Plus } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { useApps, useCreateApp } from '@/composables/useApps'
+import type { AppFormData } from '@/types/api'
 import AppCreationWizard from '@/components/apps/AppCreationWizard.vue'
 
 const router = useRouter()
@@ -207,7 +208,7 @@ function viewApp(id: number) {
   router.push(`/apps/${id}`)
 }
 
-async function handleCreateApp(formData: any) {
+async function handleCreateApp(formData: AppFormData) {
   try {
     await createMutation.mutateAsync({ app: formData })
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -215,15 +216,12 @@ async function handleCreateApp(formData: any) {
       description: `${formData.name} (${formData.subdomain}) - ${time}`
     })
     isNewAppWizardOpen.value = false
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating app:', error)
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
     toast.error('Failed to create app', {
-      description: error?.message || 'An unexpected error occurred'
+      description: errorMessage
     })
   }
-}
-
-function handleAppCreated() {
-  // Apps will auto-refresh due to query invalidation
 }
 </script>

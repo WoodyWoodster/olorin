@@ -42,6 +42,7 @@ import { ref, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import { useApp, useUpdateApp } from '@/composables/useApps'
 import { useFormDirty } from '@/composables/useFormDirty'
+import type { AppFormData } from '@/types/api'
 import AppForm from './AppForm.vue'
 import {
   Sheet,
@@ -109,7 +110,7 @@ watch(existingApp, () => {
 })
 
 // Handle form submission
-async function handleSubmit(formData: any) {
+async function handleSubmit(formData: AppFormData) {
   try {
     await mutation.mutateAsync({
       id: props.appId,
@@ -122,10 +123,11 @@ async function handleSubmit(formData: any) {
     markClean()
     emit('update:open', false)
     emit('success')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating app:', error)
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
     toast.error('Failed to update app', {
-      description: error?.message || 'An unexpected error occurred'
+      description: errorMessage
     })
   }
 }

@@ -45,6 +45,7 @@ import CommandPalette from '../components/layout/CommandPalette.vue'
 import CollapsibleSidebar from '../components/layout/CollapsibleSidebar.vue'
 import Navbar from '../components/layout/Navbar.vue'
 import AppCreationWizard from '../components/apps/AppCreationWizard.vue'
+import type { AppFormData } from '@/types/api'
 import { useCreateApp } from '@/composables/useApps'
 
 const router = useRouter()
@@ -78,7 +79,7 @@ function handleCommandPaletteAction(actionName: string) {
   }
 }
 
-async function handleCreateApp(formData: any) {
+async function handleCreateApp(formData: AppFormData) {
   try {
     await createMutation.mutateAsync({ app: formData })
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -86,10 +87,11 @@ async function handleCreateApp(formData: any) {
       description: `${formData.name} (${formData.subdomain}) - ${time}`
     })
     isAppWizardOpen.value = false
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating app:', error)
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
     toast.error('Failed to create app', {
-      description: error?.message || 'An unexpected error occurred'
+      description: errorMessage
     })
   }
 }

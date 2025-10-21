@@ -129,8 +129,36 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
+interface WizardFormData {
+  basics: {
+    name: string
+    subdomain: string
+    description: string
+    region: string
+  }
+  runtime: {
+    runtime: string
+    runtimeVersion: string
+    framework: string
+    customFramework: boolean
+  }
+  buildConfig: {
+    installCommand: string
+    buildCommand: string
+    startCommand: string
+    rootDirectory: string
+    envVars: Array<{ key: string; value: string }>
+  }
+  gitDeploy: {
+    gitUrl: string
+    branch: string
+    autoDeploy: boolean
+    notifications: boolean
+  }
+}
+
 interface Props {
-  data: any
+  data: WizardFormData
 }
 
 defineProps<Props>()

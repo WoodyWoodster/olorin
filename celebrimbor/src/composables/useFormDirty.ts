@@ -4,7 +4,7 @@ import { ref, watch, type Ref } from 'vue'
  * Composable to track if a form has been modified (dirty state)
  * Compares current form state with initial state using deep equality
  */
-export function useFormDirty<T extends Record<string, any>>(formData: Ref<T>) {
+export function useFormDirty<T extends Record<string, unknown>>(formData: Ref<T>) {
   const isDirty = ref(false)
   const initialData = ref<T | null>(null)
 
