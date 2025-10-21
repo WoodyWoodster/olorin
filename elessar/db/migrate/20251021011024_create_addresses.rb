@@ -14,7 +14,7 @@ class CreateAddresses < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :addresses, [:organization_id, :addressable_type, :addressable_id], name: 'index_addresses_on_org_and_addressable'
-    add_index :addresses, [:addressable_type, :addressable_id, :address_type], name: 'index_addresses_on_addressable_and_type'
+    add_index :addresses, [ :organization_id, :addressable_type, :addressable_id ], name: 'index_addresses_on_org_and_addressable'
+    add_index :addresses, [ :addressable_type, :addressable_id, :address_type ], name: 'index_addresses_on_addressable_and_type'
   end
 end

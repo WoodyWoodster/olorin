@@ -12,9 +12,9 @@ class Company < ApplicationRecord
 
   # Enums
   enum :company_type, {
-    customer: 'customer',
-    supplier: 'supplier',
-    both: 'both'
+    customer: "customer",
+    supplier: "supplier",
+    both: "both"
   }, prefix: true
 
   # Validations
@@ -24,16 +24,16 @@ class Company < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(is_active: true) }
-  scope :customers, -> { where(company_type: ['customer', 'both']) }
-  scope :suppliers, -> { where(company_type: ['supplier', 'both']) }
+  scope :customers, -> { where(company_type: [ "customer", "both" ]) }
+  scope :suppliers, -> { where(company_type: [ "supplier", "both" ]) }
 
   # Helper methods
   def customer?
-    company_type.in?(['customer', 'both'])
+    company_type.in?([ "customer", "both" ])
   end
 
   def supplier?
-    company_type.in?(['supplier', 'both'])
+    company_type.in?([ "supplier", "both" ])
   end
 
   def primary_contact
@@ -41,10 +41,10 @@ class Company < ApplicationRecord
   end
 
   def billing_address
-    addresses.find_by(address_type: 'billing') || addresses.first
+    addresses.find_by(address_type: "billing") || addresses.first
   end
 
   def shipping_address
-    addresses.find_by(address_type: 'shipping') || billing_address
+    addresses.find_by(address_type: "shipping") || billing_address
   end
 end

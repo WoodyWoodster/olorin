@@ -14,7 +14,7 @@ class Contact < ApplicationRecord
   scope :primary, -> { where(is_primary: true) }
 
   def full_name
-    [first_name, last_name].compact.join(' ').presence || email
+    [ first_name, last_name ].compact.join(" ").presence || email
   end
 
   private

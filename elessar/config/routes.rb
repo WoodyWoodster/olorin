@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount Rswag::Ui::Engine => "/api-docs"
+  mount Rswag::Api::Engine => "/api-docs"
   # API routes
   namespace :api do
     # Authentication endpoints under /api/auth
@@ -15,6 +17,10 @@ Rails.application.routes.draw do
 
     namespace :v1 do
       get "me", to: "me#show"
+
+      resources :products
+      resources :companies
+      resources :warehouses
     end
   end
 

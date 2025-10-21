@@ -8,10 +8,10 @@ class Address < ApplicationRecord
 
   # Enums
   enum :address_type, {
-    billing: 'billing',
-    shipping: 'shipping',
-    warehouse: 'warehouse',
-    other: 'other'
+    billing: "billing",
+    shipping: "shipping",
+    warehouse: "warehouse",
+    other: "other"
   }, prefix: true
 
   # Validations
@@ -35,6 +35,6 @@ class Address < ApplicationRecord
       state,
       postal_code,
       country
-    ].compact_blank.join(', ')
+    ].compact_blank.join(", ")
   end
 end

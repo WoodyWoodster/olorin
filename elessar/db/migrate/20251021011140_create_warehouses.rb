@@ -9,8 +9,8 @@ class CreateWarehouses < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :warehouses, [:organization_id, :code], unique: true
-    add_index :warehouses, [:organization_id, :name]
-    add_index :warehouses, [:organization_id, :is_active]
+    add_index :warehouses, [ :organization_id, :code ], unique: true
+    add_index :warehouses, [ :organization_id, :name ]
+    add_index :warehouses, [ :organization_id, :is_active ]
   end
 end

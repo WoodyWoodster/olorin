@@ -21,7 +21,7 @@ class BaseUseCase
 
   # Failure result with errors
   def failure(errors)
-    errors = [errors] unless errors.is_a?(Array)
+    errors = [ errors ] unless errors.is_a?(Array)
     Result.new(success: false, data: {}, errors: errors)
   end
 
@@ -37,7 +37,7 @@ class BaseUseCase
 
     # Raise an exception if the result is a failure
     def value!
-      raise StandardError, errors.join(', ') if failure?
+      raise StandardError, errors.join(", ") if failure?
       data
     end
   end

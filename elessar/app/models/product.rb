@@ -11,22 +11,22 @@ class Product < ApplicationRecord
 
   # Enums
   enum :product_type, {
-    raw_material: 'raw_material',
-    component: 'component',
-    finished_good: 'finished_good',
-    service: 'service'
+    raw_material: "raw_material",
+    component: "component",
+    finished_good: "finished_good",
+    service: "service"
   }, prefix: true
 
   enum :unit_of_measure, {
-    piece: 'piece',
-    kilogram: 'kilogram',
-    gram: 'gram',
-    liter: 'liter',
-    milliliter: 'milliliter',
-    meter: 'meter',
-    centimeter: 'centimeter',
-    box: 'box',
-    case: 'case'
+    piece: "piece",
+    kilogram: "kilogram",
+    gram: "gram",
+    liter: "liter",
+    milliliter: "milliliter",
+    meter: "meter",
+    centimeter: "centimeter",
+    box: "box",
+    case: "case"
   }, prefix: true
 
   # Validations

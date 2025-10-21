@@ -1,0 +1,292 @@
+---
+openapi: 3.0.1
+info:
+  title: Olorin ERP API V1
+  version: v1
+  description: Manufacturing ERP system API documentation
+paths:
+  "/api/v1/products":
+    get:
+      summary: List all products
+      tags:
+      - Products
+      security:
+      - Bearer: []
+      parameters:
+      - name: product_type
+        in: query
+        type: string
+        required: false
+        description: Filter by product type
+        schema:
+          type: string
+          enum:
+          - raw_material
+          - component
+          - finished_good
+          - service
+      - name: is_active
+        in: query
+        required: false
+        description: Filter by active status
+        schema:
+          type: boolean
+      - name: search
+        in: query
+        required: false
+        description: Search by name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: products found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Product"
+        '401':
+          description: unauthorized
+    post:
+      summary: Create a product
+      tags:
+      - Products
+      security:
+      - Bearer: []
+      parameters: []
+      responses:
+        '201':
+          description: product created
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  properties:
+                    sku:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    product_type:
+                      type: string
+                      enum:
+                      - raw_material
+                      - component
+                      - finished_good
+                      - service
+                    unit_of_measure:
+                      type: string
+                    cost:
+                      type: number
+                    price:
+                      type: number
+                    is_manufactured:
+                      type: boolean
+                    is_active:
+                      type: boolean
+                  required:
+                  - sku
+                  - name
+                  - product_type
+                  - unit_of_measure
+  "/api/v1/products/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieve a product
+      tags:
+      - Products
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: product found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Product"
+        '404':
+          description: product not found
+    patch:
+      summary: Update a product
+      tags:
+      - Products
+      security:
+      - Bearer: []
+      parameters: []
+      responses:
+        '200':
+          description: product updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    cost:
+                      type: number
+                    price:
+                      type: number
+                    is_active:
+                      type: boolean
+    delete:
+      summary: Delete a product
+      tags:
+      - Products
+      security:
+      - Bearer: []
+      responses:
+        '204':
+          description: product deleted
+        '404':
+          description: product not found
+servers:
+- url: http://localhost:3000
+  description: Development server
+- url: https://{subdomain}.olorin.com
+  description: Production server
+  variables:
+    subdomain:
+      default: app
+      description: Your organization subdomain
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from login endpoint
+  schemas:
+    Error:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+      - errors
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        sku:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        product_type:
+          type: string
+          enum:
+          - raw_material
+          - component
+          - finished_good
+          - service
+        unit_of_measure:
+          type: string
+        cost:
+          type: number
+          format: float
+          nullable: true
+        price:
+          type: number
+          format: float
+          nullable: true
+        is_manufactured:
+          type: boolean
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - sku
+      - name
+      - product_type
+      - unit_of_measure
+    Company:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        company_type:
+          type: string
+          enum:
+          - customer
+          - supplier
+          - both
+        tax_id:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - company_type
+    Warehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - code
+      - name
+security:
+- Bearer: []
