@@ -1,12 +1,12 @@
 <template>
   <div
-    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4 py-12"
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 via-white to-stone-100 px-4 py-12"
   >
     <div class="w-full max-w-md">
       <!-- Company Branding -->
       <div class="text-center mb-8">
         <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-xl mb-4"
+          class="inline-flex items-center justify-center w-16 h-16 bg-orange-600 rounded-xl mb-4"
         >
           <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -17,17 +17,17 @@
             />
           </svg>
         </div>
-        <h1 class="text-3xl font-bold text-slate-900 mb-2">Olorin PaaS</h1>
-        <p class="text-slate-600">Enterprise Resource Planning</p>
+        <h1 class="text-3xl font-bold text-stone-900 mb-2">Olorin PaaS</h1>
+        <p class="text-stone-600">Enterprise Resource Planning</p>
       </div>
 
       <!-- Login Card -->
-      <Card class="border-slate-200 shadow-xl">
+      <Card class="border-stone-200 shadow-xl">
         <CardHeader class="space-y-1 pb-6">
-          <CardTitle class="text-2xl font-bold text-center text-slate-900"
+          <CardTitle class="text-2xl font-bold text-center text-stone-900"
             >Sign in to your account</CardTitle
           >
-          <CardDescription class="text-center text-slate-600">
+          <CardDescription class="text-center text-stone-600">
             Enter your credentials to access your dashboard
           </CardDescription>
         </CardHeader>
@@ -45,10 +45,10 @@
 
             <!-- Email Input -->
             <div class="space-y-2">
-              <Label for="email" class="text-slate-700 font-medium">Email address</Label>
+              <Label for="email" class="text-stone-700 font-medium">Email address</Label>
               <div class="relative">
                 <Mail
-                  class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"
+                  class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-stone-400"
                 />
                 <Input
                   id="email"
@@ -56,7 +56,7 @@
                   type="email"
                   placeholder="you@example.com"
                   required
-                  class="pl-10 h-11 border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  class="pl-10 h-11 border-stone-300 focus:border-orange-500 focus:ring-orange-500"
                   :disabled="loginMutation.isPending.value"
                 />
               </div>
@@ -65,14 +65,14 @@
             <!-- Password Input -->
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <Label for="password" class="text-slate-700 font-medium">Password</Label>
-                <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+                <Label for="password" class="text-stone-700 font-medium">Password</Label>
+                <a href="#" class="text-sm text-orange-600 hover:text-orange-700 font-medium">
                   Forgot password?
                 </a>
               </div>
               <div class="relative">
                 <Lock
-                  class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"
+                  class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-stone-400"
                 />
                 <Input
                   id="password"
@@ -80,7 +80,7 @@
                   type="password"
                   placeholder="••••••••"
                   required
-                  class="pl-10 h-11 border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  class="pl-10 h-11 border-stone-300 focus:border-orange-500 focus:ring-orange-500"
                   :disabled="loginMutation.isPending.value"
                 />
               </div>
@@ -91,9 +91,9 @@
               <input
                 type="checkbox"
                 id="remember"
-                class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                class="h-4 w-4 rounded border-stone-300 text-orange-600 focus:ring-orange-500"
               />
-              <Label for="remember" class="text-sm text-slate-600 font-normal cursor-pointer">
+              <Label for="remember" class="text-sm text-stone-600 font-normal cursor-pointer">
                 Remember me for 30 days
               </Label>
             </div>
@@ -101,7 +101,7 @@
             <!-- Submit Button -->
             <Button
               type="submit"
-              class="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+              class="w-full h-11 bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
               :disabled="loginMutation.isPending.value"
             >
               <Loader2 v-if="loginMutation.isPending.value" class="mr-2 h-4 w-4 animate-spin" />
@@ -110,10 +110,10 @@
           </form>
         </CardContent>
 
-        <CardFooter class="flex flex-col space-y-4 border-t border-slate-100 pt-6">
-          <div class="text-sm text-center text-slate-600">
+        <CardFooter class="flex flex-col space-y-4 border-t border-stone-100 pt-6">
+          <div class="text-sm text-center text-stone-600">
             Don't have an account?
-            <router-link to="/signup" class="text-indigo-600 hover:text-indigo-700 font-semibold"
+            <router-link to="/signup" class="text-orange-600 hover:text-orange-700 font-semibold"
               >Sign up</router-link
             >
           </div>
@@ -121,7 +121,7 @@
       </Card>
 
       <!-- Footer -->
-      <div class="mt-8 text-center text-sm text-slate-500">
+      <div class="mt-8 text-center text-sm text-stone-500">
         <p>&copy; 2025 Olorin PaaS. All rights reserved.</p>
       </div>
     </div>
