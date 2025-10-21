@@ -5,7 +5,7 @@ import SignupView from '../views/SignupView.vue'
 import DashboardLayout from '../views/DashboardLayout.vue'
 import HomePage from '../views/Dashboard/HomePage.vue'
 import ProductsListPage from '../views/Products/ProductsListPage.vue'
-import ProductFormPage from '../views/Products/ProductFormPage.vue'
+import ProductDetailsPage from '../views/Products/ProductDetailsPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,14 +42,9 @@ const router = createRouter({
           component: ProductsListPage
         },
         {
-          path: 'products/new',
-          name: 'products-new',
-          component: ProductFormPage
-        },
-        {
-          path: 'products/:id/edit',
-          name: 'products-edit',
-          component: ProductFormPage
+          path: 'products/:id',
+          name: 'product-details',
+          component: ProductDetailsPage
         },
         {
           path: 'companies',
@@ -57,9 +52,19 @@ const router = createRouter({
           component: () => import('../views/Companies/CompaniesListPage.vue')
         },
         {
+          path: 'companies/:id',
+          name: 'company-details',
+          component: () => import('../views/Companies/CompanyDetailsPage.vue')
+        },
+        {
           path: 'warehouses',
           name: 'warehouses',
           component: () => import('../views/Warehouses/WarehousesListPage.vue')
+        },
+        {
+          path: 'warehouses/:id',
+          name: 'warehouse-details',
+          component: () => import('../views/Warehouses/WarehouseDetailsPage.vue')
         }
       ]
     }

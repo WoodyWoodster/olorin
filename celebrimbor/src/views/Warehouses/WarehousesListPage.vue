@@ -5,6 +5,10 @@
         <h1 class="text-3xl font-bold text-slate-900">Warehouses</h1>
         <p class="mt-2 text-sm text-slate-600">Manage warehouse locations</p>
       </div>
+      <Button @click="openNewWarehouseSheet" class="bg-indigo-600 hover:bg-indigo-700">
+        <Plus class="mr-2 h-4 w-4" />
+        New Warehouse
+      </Button>
     </div>
 
     <div class="rounded-lg border border-slate-200 bg-white">
@@ -25,10 +29,11 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Code</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Name</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Status</th>
+            <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-600">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-200">
-          <tr v-for="warehouse in warehouses" :key="warehouse.id" class="hover:bg-slate-50">
+          <tr v-for="warehouse in warehouses" :key="warehouse.id" class="cursor-pointer hover:bg-slate-50" @click="router.push(`/warehouses/${warehouse.id}`)">
             <td class="px-6 py-4 text-sm font-medium text-slate-900">{{ warehouse.code }}</td>
             <td class="px-6 py-4 text-sm text-slate-900">{{ warehouse.name }}</td>
             <td class="px-6 py-4 text-sm">
@@ -37,16 +42,54 @@
                 {{ warehouse.is_active ? 'Active' : 'Inactive' }}
               </span>
             </td>
+            <td class="px-6 py-4 text-right text-sm font-medium">
+              <Button
+                @click.stop="openEditSheet(warehouse.id)"
+                variant="ghost"
+                size="sm"
+              >
+                Edit
+              </Button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- Warehouse Form Sheet -->
+    <WarehouseFormSheet
+      v-model:open="isSheetOpen"
+      :warehouse-id="editingWarehouseId"
+      @success="handleSheetSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { Warehouse as WarehouseIcon } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { Warehouse as WarehouseIcon, Plus } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
 import { useWarehouses } from '@/composables/useWarehouses'
+import WarehouseFormSheet from '@/components/warehouses/WarehouseFormSheet.vue'
 
-const { data: warehouses, isLoading, error } = useWarehouses()
+const router = useRouter()
+const isSheetOpen = ref(false)
+const editingWarehouseId = ref<number | null>(null)
+
+const { data: warehouses, isLoading, error, refetch } = useWarehouses()
+
+function openNewWarehouseSheet() {
+  editingWarehouseId.value = null
+  isSheetOpen.value = true
+}
+
+function openEditSheet(warehouseId: number) {
+  editingWarehouseId.value = warehouseId
+  isSheetOpen.value = true
+}
+
+function handleSheetSuccess() {
+  refetch()
+}
 </script>

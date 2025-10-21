@@ -5,6 +5,10 @@
         <h1 class="text-3xl font-bold text-slate-900">Companies</h1>
         <p class="mt-2 text-sm text-slate-600">Manage customers and suppliers</p>
       </div>
+      <Button @click="openNewCompanySheet" class="bg-indigo-600 hover:bg-indigo-700">
+        <Plus class="mr-2 h-4 w-4" />
+        New Company
+      </Button>
     </div>
 
     <div class="rounded-lg border border-slate-200 bg-white">
@@ -27,10 +31,11 @@
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Email</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Phone</th>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-600">Status</th>
+            <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-600">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-200">
-          <tr v-for="company in companies" :key="company.id" class="hover:bg-slate-50">
+          <tr v-for="company in companies" :key="company.id" class="cursor-pointer hover:bg-slate-50" @click="router.push(`/companies/${company.id}`)">
             <td class="px-6 py-4 text-sm font-medium text-slate-900">{{ company.name }}</td>
             <td class="px-6 py-4 text-sm text-slate-600">
               <span class="inline-flex rounded-full px-2 text-xs font-semibold leading-5"
@@ -50,16 +55,54 @@
                 {{ company.is_active ? 'Active' : 'Inactive' }}
               </span>
             </td>
+            <td class="px-6 py-4 text-right text-sm font-medium">
+              <Button
+                @click.stop="openEditSheet(company.id)"
+                variant="ghost"
+                size="sm"
+              >
+                Edit
+              </Button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- Company Form Sheet -->
+    <CompanyFormSheet
+      v-model:open="isSheetOpen"
+      :company-id="editingCompanyId"
+      @success="handleSheetSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { Building2 } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { Building2, Plus } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
 import { useCompanies } from '@/composables/useCompanies'
+import CompanyFormSheet from '@/components/companies/CompanyFormSheet.vue'
 
-const { data: companies, isLoading, error } = useCompanies()
+const router = useRouter()
+const isSheetOpen = ref(false)
+const editingCompanyId = ref<number | null>(null)
+
+const { data: companies, isLoading, error, refetch } = useCompanies()
+
+function openNewCompanySheet() {
+  editingCompanyId.value = null
+  isSheetOpen.value = true
+}
+
+function openEditSheet(companyId: number) {
+  editingCompanyId.value = companyId
+  isSheetOpen.value = true
+}
+
+function handleSheetSuccess() {
+  refetch()
+}
 </script>

@@ -6,7 +6,7 @@
         <h1 class="text-3xl font-bold text-slate-900">Products</h1>
         <p class="mt-2 text-sm text-slate-600">Manage your product catalog</p>
       </div>
-      <Button @click="router.push('/products/new')" class="bg-indigo-600 hover:bg-indigo-700">
+      <Button @click="openNewProductSheet" class="bg-indigo-600 hover:bg-indigo-700">
         <Plus class="mr-2 h-4 w-4" />
         New Product
       </Button>
@@ -43,7 +43,7 @@
         <Package class="mx-auto h-12 w-12 text-slate-400" />
         <p class="mt-4 text-lg font-medium text-slate-900">No products found</p>
         <p class="mt-2 text-sm text-slate-600">Get started by creating a new product</p>
-        <Button @click="router.push('/products/new')" class="mt-4">
+        <Button @click="openNewProductSheet" class="mt-4">
           <Plus class="mr-2 h-4 w-4" />
           New Product
         </Button>
@@ -81,7 +81,8 @@
           <tr
             v-for="product in filteredProducts"
             :key="product.id"
-            class="hover:bg-slate-50"
+            class="cursor-pointer hover:bg-slate-50"
+            @click="router.push(`/products/${product.id}`)"
           >
             <td class="px-6 py-4 text-sm font-medium text-slate-900">
               {{ product.sku }}
@@ -121,7 +122,7 @@
             </td>
             <td class="px-6 py-4 text-right text-sm font-medium">
               <Button
-                @click="router.push(`/products/${product.id}/edit`)"
+                @click.stop="openEditSheet(product.id)"
                 variant="ghost"
                 size="sm"
               >
@@ -132,6 +133,13 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Product Form Sheet -->
+    <ProductFormSheet
+      v-model:open="isSheetOpen"
+      :product-id="editingProductId"
+      @success="handleSheetSuccess"
+    />
   </div>
 </template>
 
@@ -142,12 +150,16 @@ import { Plus, Package } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useProducts } from '@/composables/useProducts'
+import ProductFormSheet from '@/components/products/ProductFormSheet.vue'
 
 const router = useRouter()
 const searchQuery = ref('')
 const typeFilter = ref('')
 
-const { data: products, isLoading, error } = useProducts()
+const isSheetOpen = ref(false)
+const editingProductId = ref<number | null>(null)
+
+const { data: products, isLoading, error, refetch } = useProducts()
 
 const filteredProducts = computed(() => {
   if (!products.value) return []
@@ -173,5 +185,19 @@ const formatCurrency = (amount: number | undefined) => {
     style: 'currency',
     currency: 'USD'
   }).format(amount)
+}
+
+function openNewProductSheet() {
+  editingProductId.value = null
+  isSheetOpen.value = true
+}
+
+function openEditSheet(productId: number) {
+  editingProductId.value = productId
+  isSheetOpen.value = true
+}
+
+function handleSheetSuccess() {
+  refetch()
 }
 </script>

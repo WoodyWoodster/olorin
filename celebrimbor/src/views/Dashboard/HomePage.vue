@@ -92,13 +92,13 @@
       <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h2 class="font-semibold text-slate-900">Products</h2>
         <div class="flex items-center space-x-2">
-          <router-link
-            to="/products/new"
+          <button
+            @click="openNewProductSheet"
             class="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
           >
             <Plus class="mr-1 inline h-4 w-4" />
             New Product
-          </router-link>
+          </button>
           <router-link
             to="/products"
             class="text-sm font-medium text-indigo-600 hover:text-indigo-700"
@@ -179,16 +179,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Product Form Sheet -->
+    <ProductFormSheet
+      v-model:open="isNewProductSheetOpen"
+      @success="handleProductCreated"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Package, Building2, Warehouse, Plus, Clock } from 'lucide-vue-next'
 import { useProducts } from '@/composables/useProducts'
 import { useCompanies } from '@/composables/useCompanies'
+import ProductFormSheet from '@/components/products/ProductFormSheet.vue'
 
-const { data: productsData } = useProducts()
+const isNewProductSheetOpen = ref(false)
+
+const { data: productsData, refetch: refetchProducts } = useProducts()
 const { data: companiesData } = useCompanies()
 
 const recentProducts = computed(() => {
@@ -214,5 +223,13 @@ const formatCurrency = (amount: number | undefined) => {
     style: 'currency',
     currency: 'USD',
   }).format(amount)
+}
+
+function openNewProductSheet() {
+  isNewProductSheetOpen.value = true
+}
+
+function handleProductCreated() {
+  refetchProducts()
 }
 </script>

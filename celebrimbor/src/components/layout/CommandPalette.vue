@@ -23,9 +23,9 @@
       <CommandGroup heading="Actions">
         <CommandItem
           v-for="item in actionItems"
-          :key="item.href"
+          :key="item.action"
           :value="item.name"
-          @select="navigate(item.href)"
+          @select="handleAction(item.action)"
         >
           <component :is="item.icon" class="mr-2 h-4 w-4" />
           <span>{{ item.name }}</span>
@@ -61,6 +61,10 @@ import {
 const router = useRouter()
 const isOpen = ref(false)
 
+const emit = defineEmits<{
+  action: [actionName: string]
+}>()
+
 // Navigation items
 const navigationItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -74,14 +78,20 @@ const navigationItems = [
 
 // Action items
 const actionItems = [
-  { name: 'New Product', href: '/products/new', icon: Plus },
-  { name: 'New Order', href: '/orders/new', icon: Plus },
-  { name: 'New Invoice', href: '/invoices/new', icon: Plus },
+  { name: 'New Product', action: 'new-product', icon: Plus },
+  { name: 'New Order', action: 'new-order', icon: Plus },
+  { name: 'New Invoice', action: 'new-invoice', icon: Plus },
 ]
 
 // Navigation
 function navigate(href: string) {
   router.push(href)
+  isOpen.value = false
+}
+
+// Handle actions
+function handleAction(actionName: string) {
+  emit('action', actionName)
   isOpen.value = false
 }
 
