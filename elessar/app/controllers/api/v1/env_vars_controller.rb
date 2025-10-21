@@ -5,22 +5,18 @@ module Api
     class EnvVarsController < ApplicationController
       before_action :set_env_var, only: [ :show, :update, :destroy ]
 
-      # GET /api/v1/env_vars
       def index
         env_vars = EnvVar.joins(:app).order(key: :asc)
 
-        # Optional filtering
         env_vars = env_vars.where(app_id: params[:app_id]) if params[:app_id].present?
 
         render json: EnvVarSerializer.render(env_vars), status: :ok
       end
 
-      # GET /api/v1/env_vars/:id
       def show
         render json: EnvVarSerializer.render(@env_var), status: :ok
       end
 
-      # POST /api/v1/env_vars
       def create
         env_var = EnvVar.new(env_var_params)
 
@@ -31,7 +27,6 @@ module Api
         end
       end
 
-      # PATCH/PUT /api/v1/env_vars/:id
       def update
         if @env_var.update(env_var_params)
           render json: EnvVarSerializer.render(@env_var), status: :ok
@@ -40,7 +35,6 @@ module Api
         end
       end
 
-      # DELETE /api/v1/env_vars/:id
       def destroy
         if @env_var.destroy
           head :no_content

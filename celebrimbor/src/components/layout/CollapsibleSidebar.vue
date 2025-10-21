@@ -79,7 +79,7 @@ const authStore = useAuthStore()
 const isOpen = ref(false)
 
 const user = computed(() => authStore.user)
-const organization = computed(() => 'My Organization') // TODO: Get from organization context
+const organization = computed(() => 'My Organization')
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },

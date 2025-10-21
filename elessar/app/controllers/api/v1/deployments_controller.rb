@@ -5,23 +5,19 @@ module Api
     class DeploymentsController < ApplicationController
       before_action :set_deployment, only: [ :show, :update, :destroy ]
 
-      # GET /api/v1/deployments
       def index
         deployments = Deployment.joins(:app).order(created_at: :desc)
 
-        # Optional filtering
         deployments = deployments.where(app_id: params[:app_id]) if params[:app_id].present?
         deployments = deployments.where(status: params[:status]) if params[:status].present?
 
         render json: DeploymentSerializer.render(deployments), status: :ok
       end
 
-      # GET /api/v1/deployments/:id
       def show
         render json: DeploymentSerializer.render(@deployment), status: :ok
       end
 
-      # POST /api/v1/deployments
       def create
         deployment = Deployment.new(deployment_params)
 
@@ -32,7 +28,6 @@ module Api
         end
       end
 
-      # PATCH/PUT /api/v1/deployments/:id
       def update
         if @deployment.update(deployment_params)
           render json: DeploymentSerializer.render(@deployment), status: :ok
@@ -41,7 +36,6 @@ module Api
         end
       end
 
-      # DELETE /api/v1/deployments/:id
       def destroy
         if @deployment.destroy
           head :no_content

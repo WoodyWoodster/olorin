@@ -23,7 +23,6 @@ export function useLogin() {
     onSuccess: (data) => {
       authStore.setToken(data.token)
       authStore.user = data.user
-      // Invalidate and refetch user profile
       queryClient.invalidateQueries({ queryKey: ['currentUser'] })
     },
     onError: (error: unknown) => {
@@ -52,7 +51,6 @@ export function useRegister() {
     onSuccess: (data) => {
       authStore.setToken(data.token)
       authStore.user = data.user
-      // Invalidate and refetch user profile
       queryClient.invalidateQueries({ queryKey: ['currentUser'] })
     },
     onError: (error: unknown) => {

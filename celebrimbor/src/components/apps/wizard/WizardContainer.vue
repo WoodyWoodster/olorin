@@ -1,12 +1,11 @@
 <template>
   <div class="space-y-8">
     <!-- Progress Stepper -->
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-center max-w-2xl mx-auto">
       <div
         v-for="(step, index) in steps"
         :key="step.id"
         class="flex items-center"
-        :class="{ 'flex-1': index < steps.length - 1 }"
       >
         <!-- Step Circle -->
         <button
@@ -29,7 +28,7 @@
             <span v-else class="text-sm font-medium">{{ index + 1 }}</span>
           </div>
           <span
-            class="text-xs font-medium transition-colors"
+            class="text-xs font-medium transition-colors whitespace-nowrap"
             :class="{
               'text-foreground': currentStep >= index,
               'text-muted-foreground': currentStep < index
@@ -42,7 +41,7 @@
         <!-- Connector Line -->
         <div
           v-if="index < steps.length - 1"
-          class="mx-4 h-0.5 flex-1 transition-colors"
+          class="mx-4 h-0.5 w-32 transition-colors"
           :class="{
             'bg-secondary': currentStep > index,
             'bg-muted-foreground/20': currentStep <= index

@@ -8,7 +8,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     # Allow localhost for development and ALB DNS for production
-    origins ENV.fetch("CORS_ORIGINS", "http://localhost:5173").split(",")
+    origins ENV.fetch("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174").split(",")
 
     resource "*",
       headers: :any,

@@ -5,11 +5,9 @@ module Api
     class AddonsController < ApplicationController
       before_action :set_addon, only: [ :show, :update, :destroy ]
 
-      # GET /api/v1/addons
       def index
         addons = Addon.joins(:app).order(created_at: :desc)
 
-        # Optional filtering
         addons = addons.where(app_id: params[:app_id]) if params[:app_id].present?
         addons = addons.where(addon_type: params[:addon_type]) if params[:addon_type].present?
         addons = addons.where(status: params[:status]) if params[:status].present?
@@ -17,12 +15,10 @@ module Api
         render json: AddonSerializer.render(addons), status: :ok
       end
 
-      # GET /api/v1/addons/:id
       def show
         render json: AddonSerializer.render(@addon), status: :ok
       end
 
-      # POST /api/v1/addons
       def create
         addon = Addon.new(addon_params)
 
@@ -33,7 +29,6 @@ module Api
         end
       end
 
-      # PATCH/PUT /api/v1/addons/:id
       def update
         if @addon.update(addon_params)
           render json: AddonSerializer.render(@addon), status: :ok
@@ -42,7 +37,6 @@ module Api
         end
       end
 
-      # DELETE /api/v1/addons/:id
       def destroy
         if @addon.destroy
           head :no_content

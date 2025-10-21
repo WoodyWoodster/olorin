@@ -29,11 +29,12 @@
             placeholder="my-app"
             required
             class="flex-1"
+            @input="sanitizeSubdomain"
           />
           <span class="text-sm text-muted-foreground whitespace-nowrap">.yourplatform.com</span>
         </div>
         <p class="text-sm text-muted-foreground">
-          Your app will be available at <span class="font-medium">{{ localData.subdomain || 'your-app' }}.yourplatform.com</span>
+          Your app will be available at <span class="font-medium">{{ sanitizedSubdomain }}.yourplatform.com</span>
         </p>
       </div>
 
@@ -48,27 +49,34 @@
         <p class="text-sm text-muted-foreground">Optional: Describe what this app does</p>
       </div>
 
-      <!-- Region -->
+      <!-- Git Repository -->
       <div class="space-y-2">
-        <Label for="region">Region</Label>
-        <select
-          id="region"
-          v-model="localData.region"
-          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <option value="us-east">US East (Virginia)</option>
-          <option value="us-west">US West (Oregon)</option>
-          <option value="eu-west">EU West (Ireland)</option>
-          <option value="ap-southeast">Asia Pacific (Singapore)</option>
-        </select>
-        <p class="text-sm text-muted-foreground">Choose the region closest to your users</p>
+        <Label for="git-url">Git Repository URL *</Label>
+        <Input
+          id="git-url"
+          v-model="localData.gitUrl"
+          placeholder="https://github.com/username/repo.git"
+          required
+        />
+        <p class="text-sm text-muted-foreground">HTTPS or SSH URL to your repository</p>
+      </div>
+
+      <!-- Branch -->
+      <div class="space-y-2">
+        <Label for="branch">Branch</Label>
+        <Input
+          id="branch"
+          v-model="localData.branch"
+          placeholder="main"
+        />
+        <p class="text-sm text-muted-foreground">The branch to deploy (defaults to main)</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { reactive, watch, computed } from 'vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -76,7 +84,8 @@ interface BasicsData {
   name: string
   subdomain: string
   description: string
-  region: string
+  gitUrl: string
+  branch: string
 }
 
 interface Props {
@@ -93,15 +102,50 @@ const localData = reactive<BasicsData>({
   name: props.modelValue.name || '',
   subdomain: props.modelValue.subdomain || '',
   description: props.modelValue.description || '',
-  region: props.modelValue.region || 'us-east'
+  gitUrl: props.modelValue.gitUrl || '',
+  branch: props.modelValue.branch || 'main'
 })
 
 let isSubdomainManuallyEdited = false
+
+// Computed property for sanitized subdomain display
+const sanitizedSubdomain = computed(() => {
+  if (!localData.subdomain) return 'your-app'
+  return localData.subdomain
+    .toLowerCase()
+    .replace(/\s+/g, '-')  // Replace spaces with hyphens
+    .replace(/[^a-z0-9-]/g, '-')  // Replace invalid chars with hyphens
+    .replace(/-+/g, '-')  // Collapse multiple hyphens
+    .replace(/^-|-$/g, '')  // Remove leading/trailing hyphens
+})
+
+function sanitizeSubdomain() {
+  // Sanitize subdomain as user types
+  const cursorPosition = (event?.target as HTMLInputElement)?.selectionStart || 0
+  const sanitized = localData.subdomain
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+
+  if (sanitized !== localData.subdomain) {
+    localData.subdomain = sanitized
+    // Restore cursor position
+    setTimeout(() => {
+      const input = document.getElementById('subdomain') as HTMLInputElement
+      if (input) {
+        input.setSelectionRange(cursorPosition, cursorPosition)
+      }
+    }, 0)
+  }
+}
 
 function updateSubdomain() {
   if (!isSubdomainManuallyEdited && localData.name) {
     localData.subdomain = localData.name
       .toLowerCase()
+      .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '')

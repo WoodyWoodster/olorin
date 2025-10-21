@@ -5,23 +5,19 @@ module Api
     class AppsController < ApplicationController
       before_action :set_app, only: [ :show, :update, :destroy ]
 
-      # GET /api/v1/apps
       def index
         apps = App.all.order(created_at: :desc)
 
-        # Optional filtering
         apps = apps.where(status: params[:status]) if params[:status].present?
         apps = apps.where("name LIKE ?", "%#{params[:search]}%") if params[:search].present?
 
         render json: AppSerializer.render(apps), status: :ok
       end
 
-      # GET /api/v1/apps/:id
       def show
         render json: AppSerializer.render(@app), status: :ok
       end
 
-      # POST /api/v1/apps
       def create
         app = App.new(app_params)
 
@@ -32,7 +28,6 @@ module Api
         end
       end
 
-      # PATCH/PUT /api/v1/apps/:id
       def update
         if @app.update(app_params)
           render json: AppSerializer.render(@app), status: :ok
@@ -41,7 +36,6 @@ module Api
         end
       end
 
-      # DELETE /api/v1/apps/:id
       def destroy
         if @app.destroy
           head :no_content

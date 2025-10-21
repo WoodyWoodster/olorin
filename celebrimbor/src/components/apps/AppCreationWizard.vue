@@ -1,69 +1,47 @@
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="max-w-5xl max-h-[90vh] overflow-y-auto">
+    <DialogContent class="w-[95vw] max-w-[1600px] max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>{{ showTemplateSelector ? 'Create New App' : 'Configure Your App' }}</DialogTitle>
+        <DialogTitle>Create New App</DialogTitle>
         <DialogDescription>
-          {{ showTemplateSelector ? 'Choose a template to get started quickly, or start from scratch' : 'Complete the setup wizard to deploy your app' }}
+          Complete the setup wizard to deploy your app with auto-detected Dockerfiles
         </DialogDescription>
       </DialogHeader>
 
-      <!-- Template Selector (First Screen) -->
-      <div v-if="showTemplateSelector" class="py-6">
-        <TemplateSelector
-          :show-as-inline="true"
-          @select="handleTemplateSelect"
-        />
-      </div>
-
-      <!-- Wizard Steps (After Template Selection) -->
-      <div v-else>
-        <WizardContainer
-          v-model="currentStep"
-          :steps="wizardSteps"
-          :can-proceed="canProceedToNextStep"
-          :is-submitting="isSubmitting"
-          @submit="handleSubmit"
-          @cancel="handleCancel"
-        >
-          <template #default="{ currentStep: step }">
-            <StepBasics
-              v-if="step === 0"
-              v-model="formData.basics"
-            />
-            <StepRuntime
-              v-else-if="step === 1"
-              v-model="formData.runtime"
-            />
-            <StepBuildConfig
-              v-else-if="step === 2"
-              v-model="formData.buildConfig"
-            />
-            <StepGitDeploy
-              v-else-if="step === 3"
-              v-model="formData.gitDeploy"
-            />
-            <StepReview
-              v-else-if="step === 4"
-              :data="formData"
-              @edit="goToStep"
-            />
-          </template>
-        </WizardContainer>
-      </div>
+      <WizardContainer
+        v-model="currentStep"
+        :steps="wizardSteps"
+        :can-proceed="canProceedToNextStep"
+        :is-submitting="isSubmitting"
+        @submit="handleSubmit"
+        @cancel="handleCancel"
+      >
+        <template #default="{ currentStep: step }">
+          <StepBasics
+            v-if="step === 0"
+            v-model="formData.basics"
+          />
+          <StepDockerfileDetection
+            v-else-if="step === 1"
+            v-model="formData.dockerfileData"
+          />
+          <StepReview
+            v-else-if="step === 2"
+            :data="formData"
+            @edit="goToStep"
+          />
+        </template>
+      </WizardContainer>
     </DialogContent>
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import WizardContainer from './wizard/WizardContainer.vue'
-import TemplateSelector from './wizard/TemplateSelector.vue'
 import StepBasics from './wizard/steps/StepBasics.vue'
-import StepRuntime from './wizard/steps/StepRuntime.vue'
-import StepBuildConfig from './wizard/steps/StepBuildConfig.vue'
-import StepGitDeploy from './wizard/steps/StepGitDeploy.vue'
+import StepDockerfileDetection from './wizard/steps/StepDockerfileDetection.vue'
 import StepReview from './wizard/steps/StepReview.vue'
 import {
   Dialog,
@@ -72,7 +50,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import type { AppTemplate } from './wizard/templates'
 import type { AppFormData } from '@/types/api'
 
 interface Props {
@@ -88,6 +65,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'update:open': [value: boolean]
   'submit': [data: AppFormData]
+  'submit-multiple': [apps: AppFormData[]]
   'cancel': []
 }>()
 
@@ -97,58 +75,47 @@ const isOpen = computed({
 })
 
 const currentStep = ref(0)
-const showTemplateSelector = ref(true)
 
 const formData = ref({
   basics: {
     name: '',
     subdomain: '',
     description: '',
-    region: 'us-east'
-  },
-  runtime: {
-    runtime: '',
-    runtimeVersion: '',
-    framework: '',
-    customFramework: false
-  },
-  buildConfig: {
-    installCommand: '',
-    buildCommand: '',
-    startCommand: '',
-    rootDirectory: '/',
-    envVars: [] as Array<{ key: string; value: string }>
-  },
-  gitDeploy: {
     gitUrl: '',
-    branch: 'main',
-    autoDeploy: true,
-    notifications: false
+    branch: 'main'
+  },
+  dockerfileData: {
+    detectedDockerfiles: [] as Array<{
+      path: string
+      base_image: string
+      runtime?: string
+      version?: string
+      port?: number
+      start_command?: string
+    }>,
+    selectedDockerfiles: [] as string[],
+    gitUrl: '',
+    branch: '',
+    appBaseName: ''
   }
 })
 
 const wizardSteps = computed(() => [
   { id: 'basics', label: 'Basics', isValid: isBasicsValid.value },
-  { id: 'runtime', label: 'Runtime', isValid: isRuntimeValid.value },
-  { id: 'build', label: 'Build', isValid: isBuildValid.value },
-  { id: 'deploy', label: 'Deploy', isValid: isDeployValid.value },
+  { id: 'dockerfile', label: 'Dockerfile Detection', isValid: isDockerfileValid.value },
   { id: 'review', label: 'Review', isValid: true }
 ])
 
 const isBasicsValid = computed(() => {
-  return !!(formData.value.basics.name && formData.value.basics.subdomain)
+  return !!(
+    formData.value.basics.name &&
+    formData.value.basics.subdomain &&
+    formData.value.basics.gitUrl
+  )
 })
 
-const isRuntimeValid = computed(() => {
-  return !!(formData.value.runtime.runtime && formData.value.runtime.runtimeVersion)
-})
-
-const isBuildValid = computed(() => {
-  return !!formData.value.buildConfig.startCommand
-})
-
-const isDeployValid = computed(() => {
-  return !!formData.value.gitDeploy.gitUrl
+const isDockerfileValid = computed(() => {
+  return formData.value.dockerfileData.selectedDockerfiles.length > 0
 })
 
 const canProceedToNextStep = computed(() => {
@@ -156,38 +123,11 @@ const canProceedToNextStep = computed(() => {
     case 0:
       return isBasicsValid.value
     case 1:
-      return isRuntimeValid.value
-    case 2:
-      return isBuildValid.value
-    case 3:
-      return isDeployValid.value
+      return isDockerfileValid.value
     default:
       return true
   }
 })
-
-function handleTemplateSelect(template: AppTemplate | null) {
-  // Close template selector and show wizard
-  showTemplateSelector.value = false
-
-  if (template) {
-    // Pre-fill form with template data
-    formData.value.runtime.runtime = template.runtime
-    formData.value.runtime.runtimeVersion = template.runtimeVersion
-    formData.value.runtime.framework = template.framework
-    formData.value.buildConfig.installCommand = template.installCommand
-    formData.value.buildConfig.buildCommand = template.buildCommand
-    formData.value.buildConfig.startCommand = template.startCommand
-    formData.value.gitDeploy.branch = template.branch
-    if (template.envVars) {
-      formData.value.buildConfig.envVars = [...template.envVars]
-    }
-
-    toast.success(`Using ${template.name} template`, {
-      description: 'Configuration has been pre-filled for you'
-    })
-  }
-}
 
 function handleCancel() {
   emit('cancel')
@@ -198,22 +138,62 @@ function goToStep(step: number) {
   currentStep.value = step
 }
 
-function handleSubmit() {
-  // Combine all form data
-  const submitData = {
-    name: formData.value.basics.name,
-    subdomain: formData.value.basics.subdomain,
-    description: formData.value.basics.description,
-    git_url: formData.value.gitDeploy.gitUrl,
-    status: 'stopped'
-    // In a real implementation, you'd send runtime, buildConfig, etc. to different endpoints
-    // or include them in a more comprehensive app configuration
+function getSuffixFromPath(path: string): string {
+  // Extract meaningful suffix from Dockerfile path
+  // e.g., "./backend/Dockerfile.prod" -> "backend"
+  // e.g., "./Dockerfile" -> ""
+  const parts = path.split('/')
+  const directory = parts[parts.length - 2]
+
+  if (directory && directory !== '.' && directory !== '..') {
+    return directory
   }
 
-  emit('submit', submitData)
+  // Check if filename has a suffix (e.g., "Dockerfile.frontend")
+  const filename = parts[parts.length - 1]
+  const filenameParts = filename.split('.')
+  if (filenameParts.length > 2) {
+    return filenameParts[filenameParts.length - 1]
+  }
+
+  return ''
 }
 
-// Draft saving
+function handleSubmit() {
+  const selectedDockerfiles = formData.value.dockerfileData.selectedDockerfiles
+
+  if (selectedDockerfiles.length === 1) {
+    const dockerfilePath = selectedDockerfiles[0]
+    const submitData: AppFormData = {
+      name: formData.value.basics.name,
+      subdomain: formData.value.basics.subdomain,
+      description: formData.value.basics.description,
+      git_url: formData.value.basics.gitUrl,
+      branch: formData.value.basics.branch,
+      dockerfile_path: dockerfilePath,
+      status: 'stopped'
+    }
+
+    emit('submit', submitData)
+  } else {
+    const apps: AppFormData[] = selectedDockerfiles.map(dockerfilePath => {
+      const suffix = getSuffixFromPath(dockerfilePath)
+
+      return {
+        name: suffix ? `${formData.value.basics.name}-${suffix}` : formData.value.basics.name,
+        subdomain: suffix ? `${formData.value.basics.subdomain}-${suffix}` : formData.value.basics.subdomain,
+        description: formData.value.basics.description,
+        git_url: formData.value.basics.gitUrl,
+        branch: formData.value.basics.branch,
+        dockerfile_path: dockerfilePath,
+        status: 'stopped'
+      }
+    })
+
+    emit('submit-multiple', apps)
+  }
+}
+
 const DRAFT_KEY = 'app-wizard-draft'
 
 function saveDraft() {
@@ -224,64 +204,100 @@ function saveDraft() {
   }))
 }
 
-function loadDraft() {
+function loadDraft(): boolean {
   const draft = localStorage.getItem(DRAFT_KEY)
   if (draft) {
     try {
       const parsed = JSON.parse(draft)
-      // Only load if draft is less than 24 hours old
       if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
-        currentStep.value = parsed.currentStep || 0
-        formData.value = parsed.formData
-        showTemplateSelector.value = false
-        toast.success('Draft restored', {
-          description: 'Your previous session has been restored'
-        })
+        if (parsed.formData?.dockerfileData) {
+          currentStep.value = parsed.currentStep || 0
+          formData.value = parsed.formData
+          toast.success('Draft restored', {
+            description: 'Your previous session has been restored'
+          })
+          return true
+        } else {
+          clearDraft()
+          return false
+        }
       } else {
         clearDraft()
+        return false
       }
     } catch {
       clearDraft()
+      return false
     }
   }
+  return false
 }
 
 function clearDraft() {
   localStorage.removeItem(DRAFT_KEY)
 }
 
-// Auto-save draft
 watch([currentStep, formData], () => {
   saveDraft()
 }, { deep: true })
 
-// Reset wizard when dialog opens
-watch(() => props.open, (isOpen) => {
-  if (isOpen) {
-    // Check for existing draft
-    const hasDraft = localStorage.getItem(DRAFT_KEY)
-    if (hasDraft) {
-      loadDraft()
-    } else {
-      // Reset to initial state
-      showTemplateSelector.value = true
-      currentStep.value = 0
+watch(() => formData.value.basics.gitUrl, (newUrl) => {
+  if (formData.value.dockerfileData) {
+    formData.value.dockerfileData.gitUrl = newUrl
+  }
+})
+
+watch(() => formData.value.basics.branch, (newBranch) => {
+  if (formData.value.dockerfileData) {
+    formData.value.dockerfileData.branch = newBranch
+  }
+})
+
+watch(() => formData.value.basics.name, (newName) => {
+  if (formData.value.dockerfileData) {
+    formData.value.dockerfileData.appBaseName = newName
+  }
+})
+
+function resetForm() {
+  currentStep.value = 0
+  formData.value = {
+    basics: {
+      name: '',
+      subdomain: '',
+      description: '',
+      gitUrl: '',
+      branch: 'main'
+    },
+    dockerfileData: {
+      detectedDockerfiles: [],
+      selectedDockerfiles: [],
+      gitUrl: '',
+      branch: '',
+      appBaseName: ''
     }
   }
-})
+}
 
-// Load draft on mount
-onMounted(() => {
-  // Check for existing draft
-  const hasDraft = localStorage.getItem(DRAFT_KEY)
-  if (hasDraft) {
-    loadDraft()
+watch(() => props.open, (isOpen) => {
+  if (isOpen) {
+    const hasDraft = localStorage.getItem(DRAFT_KEY)
+    if (hasDraft) {
+      const loaded = loadDraft()
+      if (!loaded) {
+        resetForm()
+      }
+    } else {
+      resetForm()
+    }
+  } else {
+    clearDraft()
+    resetForm()
   }
 })
 
-// Clear draft on successful submit
 watch(() => props.isSubmitting, (isSubmitting) => {
-  if (!isSubmitting && currentStep.value === 4) {
+  if (!isSubmitting && currentStep.value === 2) {
     clearDraft()
   }
 })

@@ -60,6 +60,8 @@ export interface CreateAppRequest {
     name: string
     subdomain: string
     git_url?: string
+    branch?: string
+    dockerfile_path?: string
     status?: string
     description?: string
   }

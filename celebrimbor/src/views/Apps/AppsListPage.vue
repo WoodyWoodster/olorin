@@ -67,6 +67,7 @@
       v-model:open="isNewAppWizardOpen"
       :is-submitting="createMutation.isPending.value"
       @submit="handleCreateApp"
+      @submit-multiple="handleCreateMultipleApps"
       @cancel="isNewAppWizardOpen = false"
     />
   </div>
@@ -110,6 +111,27 @@ async function handleCreateApp(formData: AppFormData) {
     console.error('Error creating app:', error)
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
     toast.error('Failed to create app', {
+      description: errorMessage
+    })
+  }
+}
+
+async function handleCreateMultipleApps(apps: AppFormData[]) {
+  try {
+    // Create all apps sequentially
+    for (const app of apps) {
+      await createMutation.mutateAsync({ app })
+    }
+
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    toast.success(`${apps.length} apps created successfully`, {
+      description: `${apps.map(a => a.name).join(', ')} - ${time}`
+    })
+    isNewAppWizardOpen.value = false
+  } catch (error: unknown) {
+    console.error('Error creating apps:', error)
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
+    toast.error('Failed to create apps', {
       description: errorMessage
     })
   }
