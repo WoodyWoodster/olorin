@@ -43,121 +43,128 @@ export interface ApiError {
   errors?: Record<string, string[]>
 }
 
-// Products
-export interface Product {
+// Apps
+export interface App {
   id: number
-  sku: string
   name: string
+  subdomain: string
+  git_url?: string
+  status: 'stopped' | 'building' | 'running' | 'failed'
   description?: string
-  product_type: 'raw_material' | 'component' | 'finished_good' | 'service'
-  unit_of_measure: string
-  cost?: number
-  price?: number
-  is_manufactured: boolean
-  is_active: boolean
   created_at: string
   updated_at: string
 }
 
-export interface CreateProductRequest {
-  product: {
-    sku: string
+export interface CreateAppRequest {
+  app: {
     name: string
+    subdomain: string
+    git_url?: string
+    status?: string
     description?: string
-    product_type: string
-    unit_of_measure: string
-    cost?: number
-    price?: number
-    is_manufactured?: boolean
-    is_active?: boolean
   }
 }
 
-export interface UpdateProductRequest {
-  product: Partial<CreateProductRequest['product']>
+export interface UpdateAppRequest {
+  app: Partial<CreateAppRequest['app']>
 }
 
-// Companies
-export interface Address {
+// Deployments
+export interface Deployment {
   id: number
-  address_type: 'billing' | 'shipping' | 'warehouse' | 'other'
-  street: string
-  street2?: string
-  city: string
-  state?: string
-  postal_code?: string
-  country: string
-  full_address: string
-  single_line_address: string
+  app_id: number
+  commit_sha: string
+  status: 'pending' | 'building' | 'deployed' | 'failed' | 'rolled_back'
+  build_logs?: string
+  deployed_at?: string
   created_at: string
   updated_at: string
 }
 
-export interface Contact {
-  id: number
-  first_name?: string
-  last_name?: string
-  email?: string
-  phone?: string
-  mobile?: string
-  role?: string
-  is_primary: boolean
-  full_name: string
-  company_id?: number
-  created_at: string
-  updated_at: string
+export interface CreateDeploymentRequest {
+  deployment: {
+    app_id: number
+    commit_sha: string
+    status?: string
+    build_logs?: string
+    deployed_at?: string
+  }
 }
 
-export interface Company {
+export interface UpdateDeploymentRequest {
+  deployment: Partial<CreateDeploymentRequest['deployment']>
+}
+
+// Addons
+export interface Addon {
   id: number
+  app_id: number
+  addon_type: 'postgres' | 'mysql' | 'redis' | 'mongodb'
   name: string
-  company_type: 'customer' | 'supplier' | 'both'
-  tax_id?: string
-  website?: string
-  phone?: string
-  email?: string
-  is_active: boolean
-  contacts?: Contact[]
-  addresses?: Address[]
+  connection_string?: string
+  status: 'provisioning' | 'available' | 'failed' | 'deprovisioning'
+  config?: string
   created_at: string
   updated_at: string
 }
 
-export interface CreateCompanyRequest {
-  company: {
+export interface CreateAddonRequest {
+  addon: {
+    app_id: number
+    addon_type: string
     name: string
-    company_type: string
-    tax_id?: string
-    website?: string
-    phone?: string
-    email?: string
-    is_active?: boolean
+    connection_string?: string
+    status?: string
+    config?: string
   }
 }
 
-export interface UpdateCompanyRequest {
-  company: Partial<CreateCompanyRequest['company']>
+export interface UpdateAddonRequest {
+  addon: Partial<CreateAddonRequest['addon']>
 }
 
-// Warehouses
-export interface Warehouse {
+// Domains
+export interface Domain {
   id: number
-  code: string
-  name: string
-  is_active: boolean
-  addresses?: Address[]
+  app_id: number
+  hostname: string
+  ssl_enabled: boolean
+  verified_at?: string
   created_at: string
   updated_at: string
 }
 
-export interface CreateWarehouseRequest {
-  warehouse: {
-    code: string
-    name: string
-    is_active?: boolean
+export interface CreateDomainRequest {
+  domain: {
+    app_id: number
+    hostname: string
+    ssl_enabled?: boolean
+    verified_at?: string
   }
 }
 
-export interface UpdateWarehouseRequest {
-  warehouse: Partial<CreateWarehouseRequest['warehouse']>
+export interface UpdateDomainRequest {
+  domain: Partial<CreateDomainRequest['domain']>
+}
+
+// Environment Variables
+export interface EnvVar {
+  id: number
+  app_id: number
+  key: string
+  value?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateEnvVarRequest {
+  env_var: {
+    app_id: number
+    key: string
+    value?: string
+  }
+}
+
+export interface UpdateEnvVarRequest {
+  env_var: Partial<CreateEnvVarRequest['env_var']>
 }

@@ -1,5 +1,8 @@
 <template>
   <div class="min-h-screen bg-slate-50">
+    <!-- Toast Notifications -->
+    <Toaster />
+
     <!-- Command Palette -->
     <CommandPalette
       ref="commandPaletteRef"
@@ -10,17 +13,9 @@
     <CollapsibleSidebar ref="sidebarRef" />
 
     <!-- Form Sheets -->
-    <ProductFormSheet
-      v-model:open="isProductSheetOpen"
-      @success="handleProductSheetSuccess"
-    />
-    <CompanyFormSheet
-      v-model:open="isCompanySheetOpen"
-      @success="handleCompanySheetSuccess"
-    />
-    <WarehouseFormSheet
-      v-model:open="isWarehouseSheetOpen"
-      @success="handleWarehouseSheetSuccess"
+    <AppFormSheet
+      v-model:open="isAppSheetOpen"
+      @success="handleAppSheetSuccess"
     />
 
     <!-- Main Content -->
@@ -42,20 +37,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Toaster } from '@/components/ui/sonner'
 import CommandPalette from '../components/layout/CommandPalette.vue'
 import CollapsibleSidebar from '../components/layout/CollapsibleSidebar.vue'
 import Navbar from '../components/layout/Navbar.vue'
-import ProductFormSheet from '../components/products/ProductFormSheet.vue'
-import CompanyFormSheet from '../components/companies/CompanyFormSheet.vue'
-import WarehouseFormSheet from '../components/warehouses/WarehouseFormSheet.vue'
+import AppFormSheet from '../components/apps/AppFormSheet.vue'
 
 const router = useRouter()
 const commandPaletteRef = ref<InstanceType<typeof CommandPalette> | null>(null)
 const sidebarRef = ref<InstanceType<typeof CollapsibleSidebar> | null>(null)
 
-const isProductSheetOpen = ref(false)
-const isCompanySheetOpen = ref(false)
-const isWarehouseSheetOpen = ref(false)
+const isAppSheetOpen = ref(false)
 
 function toggleSidebar() {
   sidebarRef.value?.open()
@@ -67,35 +59,21 @@ function openCommandPalette() {
 
 function handleCommandPaletteAction(actionName: string) {
   switch (actionName) {
-    case 'new-product':
-      isProductSheetOpen.value = true
+    case 'new-app':
+      isAppSheetOpen.value = true
       break
-    case 'new-order':
-      // TODO: Implement when orders are ready
-      router.push('/orders')
+    case 'new-addon':
+      // TODO: Implement add-on marketplace
+      router.push('/apps')
       break
-    case 'new-invoice':
-      // TODO: Implement when invoices are ready
-      router.push('/invoices')
-      break
-    case 'new-company':
-      isCompanySheetOpen.value = true
-      break
-    case 'new-warehouse':
-      isWarehouseSheetOpen.value = true
+    case 'new-domain':
+      // TODO: Implement domain management
+      router.push('/apps')
       break
   }
 }
 
-function handleProductSheetSuccess() {
-  // Optionally navigate to products page or stay on current page
-}
-
-function handleCompanySheetSuccess() {
-  // Optionally navigate to companies page or stay on current page
-}
-
-function handleWarehouseSheetSuccess() {
-  // Optionally navigate to warehouses page or stay on current page
+function handleAppSheetSuccess() {
+  // App will auto-refresh due to query invalidation
 }
 </script>

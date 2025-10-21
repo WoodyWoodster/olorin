@@ -10,7 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_21_011140) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_21_031850) do
+  create_table "addons", force: :cascade do |t|
+    t.integer "app_id", null: false
+    t.string "addon_type", null: false
+    t.string "name", null: false
+    t.text "connection_string"
+    t.string "status", default: "provisioning", null: false
+    t.text "config"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["app_id", "addon_type"], name: "index_addons_on_app_id_and_addon_type"
+    t.index ["app_id"], name: "index_addons_on_app_id"
+    t.index ["status"], name: "index_addons_on_status"
+  end
+
   create_table "addresses", force: :cascade do |t|
     t.integer "organization_id", null: false
     t.string "addressable_type", null: false
@@ -28,6 +42,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_011140) do
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
     t.index ["organization_id", "addressable_type", "addressable_id"], name: "index_addresses_on_org_and_addressable"
     t.index ["organization_id"], name: "index_addresses_on_organization_id"
+  end
+
+  create_table "apps", force: :cascade do |t|
+    t.integer "organization_id", null: false
+    t.string "name", null: false
+    t.string "subdomain", null: false
+    t.string "git_url"
+    t.string "status", default: "stopped", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id", "name"], name: "index_apps_on_organization_id_and_name"
+    t.index ["organization_id", "subdomain"], name: "index_apps_on_organization_id_and_subdomain", unique: true
+    t.index ["organization_id"], name: "index_apps_on_organization_id"
+    t.index ["status"], name: "index_apps_on_status"
   end
 
   create_table "companies", force: :cascade do |t|
@@ -63,6 +92,41 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_011140) do
     t.index ["company_id"], name: "index_contacts_on_company_id"
     t.index ["organization_id", "email"], name: "index_contacts_on_organization_id_and_email"
     t.index ["organization_id"], name: "index_contacts_on_organization_id"
+  end
+
+  create_table "deployments", force: :cascade do |t|
+    t.integer "app_id", null: false
+    t.string "commit_sha", null: false
+    t.string "status", default: "pending", null: false
+    t.text "build_logs"
+    t.datetime "deployed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["app_id", "created_at"], name: "index_deployments_on_app_id_and_created_at"
+    t.index ["app_id"], name: "index_deployments_on_app_id"
+    t.index ["status"], name: "index_deployments_on_status"
+  end
+
+  create_table "domains", force: :cascade do |t|
+    t.integer "app_id", null: false
+    t.string "hostname", null: false
+    t.boolean "ssl_enabled", default: false, null: false
+    t.datetime "verified_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["app_id", "hostname"], name: "index_domains_on_app_id_and_hostname"
+    t.index ["app_id"], name: "index_domains_on_app_id"
+    t.index ["hostname"], name: "index_domains_on_hostname", unique: true
+  end
+
+  create_table "env_vars", force: :cascade do |t|
+    t.integer "app_id", null: false
+    t.string "key", null: false
+    t.text "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["app_id", "key"], name: "index_env_vars_on_app_id_and_key", unique: true
+    t.index ["app_id"], name: "index_env_vars_on_app_id"
   end
 
   create_table "jwt_denylists", force: :cascade do |t|
@@ -136,10 +200,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_011140) do
     t.index ["organization_id"], name: "index_warehouses_on_organization_id"
   end
 
+  add_foreign_key "addons", "apps"
   add_foreign_key "addresses", "organizations"
+  add_foreign_key "apps", "organizations"
   add_foreign_key "companies", "organizations"
   add_foreign_key "contacts", "companies"
   add_foreign_key "contacts", "organizations"
+  add_foreign_key "deployments", "apps"
+  add_foreign_key "domains", "apps"
+  add_foreign_key "env_vars", "apps"
   add_foreign_key "products", "organizations"
   add_foreign_key "users", "organizations"
   add_foreign_key "warehouses", "organizations"

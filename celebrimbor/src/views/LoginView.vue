@@ -17,7 +17,7 @@
             />
           </svg>
         </div>
-        <h1 class="text-3xl font-bold text-slate-900 mb-2">Olorin ERP</h1>
+        <h1 class="text-3xl font-bold text-slate-900 mb-2">Olorin PaaS</h1>
         <p class="text-slate-600">Enterprise Resource Planning</p>
       </div>
 
@@ -122,7 +122,7 @@
 
       <!-- Footer -->
       <div class="mt-8 text-center text-sm text-slate-500">
-        <p>&copy; 2025 Olorin ERP. All rights reserved.</p>
+        <p>&copy; 2025 Olorin PaaS. All rights reserved.</p>
       </div>
     </div>
   </div>

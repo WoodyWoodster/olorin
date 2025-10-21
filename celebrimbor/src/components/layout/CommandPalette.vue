@@ -40,11 +40,9 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   LayoutDashboard,
-  Package,
-  Building2,
-  Warehouse,
-  ShoppingCart,
-  FileText,
+  Rocket,
+  Database,
+  Globe,
   Settings,
   Plus
 } from 'lucide-vue-next'
@@ -68,19 +66,15 @@ const emit = defineEmits<{
 // Navigation items
 const navigationItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Products', href: '/products', icon: Package },
-  { name: 'Companies', href: '/companies', icon: Building2 },
-  { name: 'Warehouses', href: '/warehouses', icon: Warehouse },
-  { name: 'Orders', href: '/orders', icon: ShoppingCart },
-  { name: 'Invoices', href: '/invoices', icon: FileText },
+  { name: 'Apps', href: '/apps', icon: Rocket },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 // Action items
 const actionItems = [
-  { name: 'New Product', action: 'new-product', icon: Plus },
-  { name: 'New Order', action: 'new-order', icon: Plus },
-  { name: 'New Invoice', action: 'new-invoice', icon: Plus },
+  { name: 'New App', action: 'new-app', icon: Plus },
+  { name: 'Provision Add-on', action: 'new-addon', icon: Database },
+  { name: 'Add Custom Domain', action: 'new-domain', icon: Globe },
 ]
 
 // Navigation
