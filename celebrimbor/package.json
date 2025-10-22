@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@radix-icons/vue": "^1.0.0",
-    "@rails/actioncable": "^8.0.201",
+    "@rails/actioncable": "^8.1.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/vue-query": "^5.62.7",
     "@vee-validate/zod": "^4.15.1",
